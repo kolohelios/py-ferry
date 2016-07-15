@@ -11,7 +11,7 @@ class Ferry(object):
         self.speed = speed # knots
         self.burn_rate = burn_rate # gals/hr
         self.price = price # millions
-        self.launched = launched
+        self.launched = launched # year launched
         self.usable_life = usable_life
 
     def depreciated_value(self, year):
