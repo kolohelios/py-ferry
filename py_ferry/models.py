@@ -16,38 +16,54 @@ class User(Base, UserMixin):
     email = Column(String(128), unique = True)
     password = Column(String(128))
 
-class Ferry(Base):
+class Ferry_Class(Base):
     '''
     The ferry model is the core of the project
     because that's what this game is all about!
     '''
-    __tablename__ = 'ferries'
+    __tablename__ = 'ferry_classes'
     
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "passengers": self.passengers,
+            "cars": self.cars,
+            "trucks": self.trucks,
+            "speed": self.speed,
+            "burn_rate": self.burn_rate,
+        }
+        
     def depreciated_value(self, year):
         age = year - self.launched
         if(age >= self.usable_life):
             return 0
-        return self.price - self.price * age / self.usable_life
+        return self.cost - self.cost * age / self.usable_life
     
     id = Column(Integer, primary_key = True)
     name = Column(String(64))
     passengers = Column(Integer)
     cars = Column(Integer)
-    trucks = Column(Integer)
-    speed = Column(Integer)
-    burn_rate = Column(Integer)
-    price = Column(Integer)
-    launched = Column(Integer)
+    trucks = Column(Integer) #commercial vehicles
+    speed = Column(Integer) # knots
+    burn_rate = Column(Integer) # fuel consumption per hour
+    cost = Column(Integer) # acquisition cost
     usable_life = Column(Integer)
+    
+    ferry_id = Column(Integer, ForeignKey('ferries.id'))
 
-    # def __init__(self, passengers, cars, trucks, speed, burn_rate, price, launched, usable_life):
-    #     self.passengers = passengers
-    #     self.cars = cars
-    #     self.trucks = trucks # commercial vehicles
-    #     self.speed = speed # knots
-    #     self.burn_rate = burn_rate # gals/hr
-    #     self.price = price # millions
-    #     self.launched = launched # year launched
-    #     self.usable_life = usable_life
-
+class Ferry(Base):
+    __tablename__ = 'ferries'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "ferry_class": self.ferry_class.as_dictionary()
+        }
+        
+    id = Column(Integer, primary_key = True)
+    launched = Column(Integer) 
+    # ferry_class_id = Column(Integer, ForeignKey('ferry_class.id'))
+    
+    ferry_class = relationship('Ferry_Class', uselist = False)
     

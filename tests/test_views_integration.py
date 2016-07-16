@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash
 
 # configure your app to use the testing configuration
 if not 'CONFIG_PATH' in os.environ:
-    os.environ['CONFIG_PATH'] = 'blog.config.TestingConfig'
+    os.environ['CONFIG_PATH'] = 'py_ferry.config.TestingConfig'
 
 from py_ferry import app
 from py_ferry.database import Base, engine, session
@@ -38,7 +38,13 @@ class TestViews(unittest.TestCase):
             http_session['_fresh'] = True
         
     def test_login(self):
+        ''' login test '''
         self.simulate_login()
+        self.assertEqual(True, True)
+        
+    def test_another_test(self):
+        self.assertEqual(True, True)
+        
         
     #     response = self.client.post('/entry/add', data = {
     #         'title': 'Test Entry',
