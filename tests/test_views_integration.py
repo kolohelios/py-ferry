@@ -1,12 +1,9 @@
 import os
+import sys
 import unittest
 from urllib.parse import urlparse
 
 from werkzeug.security import generate_password_hash
-
-# configure your app to use the testing configuration
-if not 'CONFIG_PATH' in os.environ:
-    os.environ['CONFIG_PATH'] = 'py_ferry.config.TestingConfig'
 
 from py_ferry import app
 from py_ferry.database import Base, engine, session

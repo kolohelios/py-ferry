@@ -1,5 +1,6 @@
 import unittest
 import os
+import sys
 import shutil
 import json
 try: from urllib.parse import urlparse
@@ -7,8 +8,6 @@ except ImportError: from urlparse import urlparse
 from io import StringIO, BytesIO
 
 import sys; print(list(sys.modules.keys()))
-# Configure our app to use the testing databse
-os.environ["CONFIG_PATH"] = "py_ferry.config.TestingConfig"
 
 from py_ferry import app
 from py_ferry import models
@@ -60,8 +59,8 @@ class TestAPI(unittest.TestCase):
         ferry_class_props = { 
             'name': 'Jumbo Mark II',
             'passengers': 2500,
-            'cars': 200,
-            'trucks': 60,
+            'cars': 202,
+            'max_commercial': 60,
             'speed': 21,
             'burn_rate': 350
         }
@@ -69,7 +68,7 @@ class TestAPI(unittest.TestCase):
             name = ferry_class_props['name'],
             passengers = ferry_class_props['passengers'],
             cars = ferry_class_props['cars'],
-            trucks = ferry_class_props['trucks'],
+            max_commercial = ferry_class_props['max_commercial'],
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
         )

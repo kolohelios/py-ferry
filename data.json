@@ -1,0 +1,72 @@
+[
+    {
+        "model_name": "Ferry_Class",
+        "data": [
+            {
+                "name": "Jumbo Mark II",
+                "passengers": 2499,
+                "cars": 202,
+                "max_commercial": 60,
+                "speed": 18,
+                "burn_rate": 350
+            },
+            {
+                "name": "Jumbo",
+                "passengers": 2000,
+                "cars": 188,
+                "max_commercial": 60,
+                "speed": 18,
+                "burn_rate": 350
+            },
+            {
+                "name": "Super",
+                "passengers": 2000,
+                "cars": 144,
+                "max_commercial": 30,
+                "speed": 20,
+                "burn_rate": 350
+            },
+            {
+                "name": "Olympic",
+                "passengers": 1500,
+                "cars": 144,
+                "max_commercial": 34,
+                "speed": 17,
+                "burn_rate": 350
+            },
+            {
+                "name": "Issaquah",
+                "passengers": 1200,
+                "cars": 124,
+                "max_commercial": 26,
+                "speed": 16,
+                "burn_rate": 350
+            },
+            {
+                "name": "Evergreen State",
+                "passengers": 854,
+                "cars": 87,
+                "max_commercial": 30,
+                "speed": 13,
+                "burn_rate": 350
+            },
+            {
+                "name": "Kwa-di Tabil",
+                "passengers": 748,
+                "cars": 64,
+                "max_commercial": 9,
+                "speed": 15,
+                "burn_rate": 350
+            },
+            {
+                "name": "Hiyu",
+                "passengers": 199,
+                "cars": 34,
+                "max_commercial": 12,
+                "speed": 10,
+                "burn_rate": 350
+            }
+        ]
+    }    
+    
+]

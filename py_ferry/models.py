@@ -29,7 +29,7 @@ class Ferry_Class(Base):
             "name": self.name,
             "passengers": self.passengers,
             "cars": self.cars,
-            "trucks": self.trucks,
+            "max_commercial": self.max_commercial,
             "speed": self.speed,
             "burn_rate": self.burn_rate,
         }
@@ -41,10 +41,10 @@ class Ferry_Class(Base):
         return self.cost - self.cost * age / self.usable_life
     
     id = Column(Integer, primary_key = True)
-    name = Column(String(64))
+    name = Column(String(64), unique = True)
     passengers = Column(Integer)
     cars = Column(Integer)
-    trucks = Column(Integer) #commercial vehicles
+    max_commercial = Column(Integer) # maximum commercial vehicles
     speed = Column(Integer) # knots
     burn_rate = Column(Integer) # fuel consumption per hour
     cost = Column(Integer) # acquisition cost
@@ -63,7 +63,6 @@ class Ferry(Base):
         
     id = Column(Integer, primary_key = True)
     launched = Column(Integer) 
-    # ferry_class_id = Column(Integer, ForeignKey('ferry_class.id'))
     
     ferry_class = relationship('Ferry_Class', uselist = False)
     
