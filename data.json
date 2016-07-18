@@ -8,7 +8,9 @@
                 "cars": 202,
                 "max_commercial": 60,
                 "speed": 18,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Jumbo",
@@ -16,7 +18,9 @@
                 "cars": 188,
                 "max_commercial": 60,
                 "speed": 18,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Super",
@@ -24,7 +28,9 @@
                 "cars": 144,
                 "max_commercial": 30,
                 "speed": 20,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Olympic",
@@ -32,7 +38,9 @@
                 "cars": 144,
                 "max_commercial": 34,
                 "speed": 17,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Issaquah",
@@ -40,7 +48,9 @@
                 "cars": 124,
                 "max_commercial": 26,
                 "speed": 16,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Evergreen State",
@@ -48,7 +58,9 @@
                 "cars": 87,
                 "max_commercial": 30,
                 "speed": 13,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Kwa-di Tabil",
@@ -56,7 +68,9 @@
                 "cars": 64,
                 "max_commercial": 9,
                 "speed": 15,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             },
             {
                 "name": "Hiyu",
@@ -64,7 +78,9 @@
                 "cars": 34,
                 "max_commercial": 12,
                 "speed": 10,
-                "burn_rate": 350
+                "burn_rate": 350,
+                "cost": 80000000,
+                "residual_value": 2000000
             }
         ]
     }    

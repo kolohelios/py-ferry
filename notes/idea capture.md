@@ -99,3 +99,19 @@ staff quality
 * destination
 * round trip?
 * fare class
+
+
+# other notes I found
+chose between three boats
+4 terminals on each side
+pressure to determine ridership
+events affect pressure
+pressure is general plus may have a center
+
+the pressure thing seems too complicated
+
+users
+	have profitability
+	have ferries
+	have routes
+		have schedules

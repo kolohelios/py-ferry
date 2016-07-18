@@ -5,3 +5,6 @@ Right now, not much of anything; just a concept. I ride the Seattle - Bainbridge
 
 ## Where can I learn more?
 There are some images in the /notes folder that are photos that were taken from some hand-written notes from a whiteboard and a notebook.
+
+## Major To-Dos
+* document REST API

@@ -71,9 +71,9 @@ class Ferry(Base):
     
     def depreciated_value(self, year):
         age = year - self.launched
-        if(age >= self.usable_life):
+        if(age >= self.ferry_class.usable_life):
             return 0
-        return self.cost - self.cost * age / self.usable_life
+        return self.ferry_class.residual_value - self.ferry_class.cost * age / self.ferry_class.usable_life
         
     id = Column(Integer, primary_key = True)
     name = Column(String(64))
@@ -95,5 +95,36 @@ class Game(Base):
     cash_available = Column(Float, default = 0)
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
+    routes = relationship('Route', backref = 'game')
+    
+class Terminal(Base):
+    __tablename__ = 'terminals'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id
+        }
+    
+    id = Column(Integer, primary_key = True)
+
+class Base_Route(Base):
+    __tablename__ = 'base_routes'
+    
+    id = Column(Integer, primary_key = True)
+    
+    routes = relationship('Route', backref = 'base_route')
+
+class Route(Base):
+    __tablename__ = 'routes'
+    
+    id = Column(Integer, primary_key = True)
+    first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
+    second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
+    
+    first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
+    second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
+    
+    base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
+    game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
 Base.metadata.create_all(engine)
