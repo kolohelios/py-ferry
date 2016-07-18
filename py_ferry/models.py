@@ -15,6 +15,8 @@ class User(Base, UserMixin):
     name = Column(String(128))
     email = Column(String(128), unique = True)
     password = Column(String(128))
+    
+    ferries = relationship('Ferry', backref = 'owner')
 
 class Ferry_Class(Base):
     '''
@@ -50,7 +52,7 @@ class Ferry_Class(Base):
     cost = Column(Integer) # acquisition cost
     usable_life = Column(Integer)
     
-    ferry_id = Column(Integer, ForeignKey('ferries.id'))
+
 
 class Ferry(Base):
     __tablename__ = 'ferries'
@@ -58,11 +60,15 @@ class Ferry(Base):
     def as_dictionary(self):
         return {
             "id": self.id,
+            "name": self.name,
             "ferry_class": self.ferry_class.as_dictionary()
         }
         
     id = Column(Integer, primary_key = True)
+    name = Column(String(64))
     launched = Column(Integer) 
+    owner_id = Column(Integer, ForeignKey('users.id'), nullable = False)
+    ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     
     ferry_class = relationship('Ferry_Class', uselist = False)
     

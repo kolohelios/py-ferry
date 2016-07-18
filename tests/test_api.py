@@ -3,11 +3,14 @@ import os
 import sys
 import shutil
 import json
+
+from werkzeug.security import generate_password_hash
+
 try: from urllib.parse import urlparse
 except ImportError: from urlparse import urlparse
 from io import StringIO, BytesIO
 
-import sys; print(list(sys.modules.keys()))
+import sys
 
 from py_ferry import app
 from py_ferry import models
@@ -22,12 +25,23 @@ class TestAPI(unittest.TestCase):
 
         # Set up the tables in the database
         Base.metadata.create_all(engine)
+        
+        # create an example user
+        self.user = models.User(name = 'capnmorgan', email = 'rumshine@gmail.com', 
+            password = generate_password_hash('test'))
+        session.add(self.user)
+        session.commit()
 
     def tearDown(self):
         ''' Test teardown '''
         session.close()
         # Remove the tables and their data from the database
         Base.metadata.drop_all(engine)
+        
+    def simulate_login(self):
+        with self.client.session_transaction() as http_session:
+            http_session['user_id'] = str(self.user.id)
+            http_session['_fresh'] = True
         
     def test_get_with_unsupported_accept_header(self):
         ''' test getting all ferries with an unsupported accept header '''
@@ -92,12 +106,17 @@ class TestAPI(unittest.TestCase):
         
     def test_get_ferries(self):
         ''' get all ferries '''
+        self.simulate_login()
+        
+        bob = models.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com')
+        george = models.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com')
         ferry_class_props = { 'name': 'Jumbo Mark II' }
         ferry_class = models.Ferry_Class(name = ferry_class_props['name'])
 
-        ferry = models.Ferry(ferry_class = ferry_class)
+        ferryA = models.Ferry(name = 'Puget Rider', ferry_class = ferry_class, owner = self.user)
+        ferryB = models.Ferry(ferry_class = ferry_class, owner = george)
 
-        session.add_all([ferry_class, ferry])
+        session.add_all([bob, george, ferry_class, ferryA, ferryB])
         session.commit()
         
         response = self.client.get('/api/ferries',
@@ -113,6 +132,7 @@ class TestAPI(unittest.TestCase):
         ferryA = data[0]
         print(ferryA)
         self.assertEqual(ferryA['ferry_class']['name'], ferry_class_props['name'])
+        self.assertEqual(ferryA['name'], 'Puget Rider')
         
 if __name__ == '__main__':
     unittest.main()

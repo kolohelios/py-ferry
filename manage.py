@@ -39,15 +39,13 @@ def importdata():
         data_records = collection['data']
         count = 0
         for data_record in data_records:
-            print(data_record['name'])
             try:
                 model = getattr(models, model_name)
                 item = model(**data_record)
                 session.add(item)
                 session.commit()
-            except:
-                print('duplicate key error')
-                pass
+            except Exception as e:
+                print(type(e), 'for {}'.format(model_name))
             else:
                 count += 1
                 pass
