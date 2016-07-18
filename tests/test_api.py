@@ -3,6 +3,7 @@ import os
 import sys
 import shutil
 import json
+from datetime import datetime
 
 from werkzeug.security import generate_password_hash
 
@@ -13,7 +14,7 @@ from io import StringIO, BytesIO
 import sys
 
 from py_ferry import app
-from py_ferry import models
+from py_ferry import database
 from py_ferry.database import Base, engine, session
 
 class TestAPI(unittest.TestCase):
@@ -27,7 +28,7 @@ class TestAPI(unittest.TestCase):
         Base.metadata.create_all(engine)
         
         # create an example user
-        self.user = models.User(name = 'capnmorgan', email = 'rumshine@gmail.com', 
+        self.user = database.User(name = 'capnmorgan', email = 'rumshine@gmail.com', 
             password = generate_password_hash('test'))
         session.add(self.user)
         session.commit()
@@ -78,7 +79,7 @@ class TestAPI(unittest.TestCase):
             'speed': 21,
             'burn_rate': 350
         }
-        ferry_class_A = models.Ferry_Class(
+        ferry_class_A = database.Ferry_Class(
             name = ferry_class_props['name'],
             passengers = ferry_class_props['passengers'],
             cars = ferry_class_props['cars'],
@@ -86,7 +87,7 @@ class TestAPI(unittest.TestCase):
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
         )
-        ferry_class_B = models.Ferry_Class()
+        ferry_class_B = database.Ferry_Class()
         session.add_all([ferry_class_A, ferry_class_B])
         session.commit()
         
@@ -108,18 +109,21 @@ class TestAPI(unittest.TestCase):
         ''' get all ferries '''
         self.simulate_login()
         
-        bob = models.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com')
-        george = models.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com')
+        # Bob and George are red herrings for testing
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com')
+        george = database.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com')
         ferry_class_props = { 'name': 'Jumbo Mark II' }
-        ferry_class = models.Ferry_Class(name = ferry_class_props['name'])
+        ferry_class = database.Ferry_Class(name = ferry_class_props['name'])
+        gameA = database.Game(player = self.user)
+        gameB = database.Game(player = george)
 
-        ferryA = models.Ferry(name = 'Puget Rider', ferry_class = ferry_class, owner = self.user)
-        ferryB = models.Ferry(ferry_class = ferry_class, owner = george)
+        ferryA = database.Ferry(name = 'Puget Rider', ferry_class = ferry_class, game = gameA)
+        ferryB = database.Ferry(ferry_class = ferry_class, game = gameB)
 
-        session.add_all([bob, george, ferry_class, ferryA, ferryB])
+        session.add_all([bob, george, ferry_class, gameA, gameB, ferryA, ferryB])
         session.commit()
         
-        response = self.client.get('/api/ferries',
+        response = self.client.get('/api/ferries/' + str(gameA.id),
             headers = [('Accept', 'application/json')]
         )
         
@@ -130,9 +134,34 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(len(data), 1)
         
         ferryA = data[0]
-        print(ferryA)
         self.assertEqual(ferryA['ferry_class']['name'], ferry_class_props['name'])
         self.assertEqual(ferryA['name'], 'Puget Rider')
+        
+    # def test_get_new_game(self):
+    #     ''' get a new game for the current user '''
+    #     self.simulate_login()
+        
+    #     game = models.Game(player_id = self.user.id)
+        
+    #     session.add_all([game])
+    #     session.commit()
+        
+    #     response = self.client.get('/api/games',
+    #         headers = [('Accept', 'application/json')]
+    #     )
+        
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.mimetype, 'application/json')
+        
+    #     data = json.loads(response.data.decode('ascii'))
+    #     self.assertEqual(len(data), 1)
+        
+    #     game = data[0]
+    #     self.assertEqual(game['player_id'], self.user.id)
+    #     self.assertLessEqual(game['created_date'], datetime.now)
+    #     self.assertEqual(game['cash_available'], 0)
+    #     self.assertEqual(game['player_id'], self.user.id)
+        
         
 if __name__ == '__main__':
     unittest.main()

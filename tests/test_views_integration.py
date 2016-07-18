@@ -6,8 +6,8 @@ from urllib.parse import urlparse
 from werkzeug.security import generate_password_hash
 
 from py_ferry import app
-from py_ferry.database import Base, engine, session
-from py_ferry.models import User
+from py_ferry.database import Base, engine, session, User
+from py_ferry import database
 
 class TestViews(unittest.TestCase):
     def setUp(self):

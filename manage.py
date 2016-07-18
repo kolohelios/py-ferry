@@ -1,14 +1,13 @@
 import os, json
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from py_ferry.database import session, Base
 from getpass import getpass
 from werkzeug.security import generate_password_hash
 from pprint import pprint
 
 from py_ferry import app
-from py_ferry.models import User
-from py_ferry import models
+from py_ferry import database
+from py_ferry.database import session, Base, User
 # might be better to load these dynamically for the importdata function
 
 class DB(object):
@@ -40,7 +39,7 @@ def importdata():
         count = 0
         for data_record in data_records:
             try:
-                model = getattr(models, model_name)
+                model = getattr(database, model_name)
                 item = model(**data_record)
                 session.add(item)
                 session.commit()
