@@ -25,6 +25,17 @@ def ferry_classes_get():
     data = json.dumps([ferry_class.as_dictionary() for ferry_class in ferry_classes])
     return Response(data, 200, mimetype = 'application/json')
     
+@app.route('/api/terminals', methods = ['GET'])
+@decorators.accept('application/json')
+def terminals_get():
+    ''' get terminals '''
+    
+    terminals = session.query(database.Terminal)
+    terminals = terminals.order_by(database.Terminal.name)
+
+    data = json.dumps([terminal.as_dictionary() for terminal in terminals])
+    return Response(data, 200, mimetype = 'application/json')
+    
 @app.route('/api/ferries/<int:game_id>', methods = ['GET'])
 @login_required
 @decorators.accept('application/json')

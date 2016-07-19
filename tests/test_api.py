@@ -63,7 +63,7 @@ class TestAPI(unittest.TestCase):
             'Request must accept application/json data')
             
     def test_get_empty_ferry_classes(self):
-        ''' test getting empty ferry classes '''
+        ''' test getting empty ferry class list '''
         response = self.client.get('/api/ferry_classes',
             headers = [('Accept', 'application/json')]
         )
@@ -73,7 +73,7 @@ class TestAPI(unittest.TestCase):
         
         data = json.loads(response.data.decode('ascii'))
         self.assertEqual(len(data), 0)
-        
+    
     def test_get_ferry_classes(self):
         ''' get all ferry classes '''
         ferry_class_props = { 
@@ -110,6 +110,47 @@ class TestAPI(unittest.TestCase):
         for key, value in ferry_class_props.items():
             self.assertEqual(ferry_class_A[key], value)
         
+    def test_get_empty_terminals(self):
+        ''' test getting empty terminal list '''
+        response = self.client.get('/api/terminals',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 0)    
+        
+    def test_get_terminals(self):
+        ''' test getting a couple of terminals '''
+        
+        terminalA = database.Terminal(name = 'Timbuktu', lat = 111.1111, lon = -122.2222)
+        terminalB = database.Terminal(name = 'Never Never Land', lat = 33.3333, lon = -160.9999)
+        
+        session.add_all([terminalA, terminalB])
+        session.commit()
+        
+        response = self.client.get('/api/terminals',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 2)
+        
+        # we have to switch the indexes because the API returns results sorted by name
+        terminalA = data[1]
+        terminalB = data[0]
+        self.assertEqual(terminalA['name'], 'Timbuktu')
+        self.assertEqual(terminalA['lat'], 111.1111)
+        self.assertEqual(terminalA['lon'], -122.2222)
+        self.assertEqual(terminalB['name'], 'Never Never Land')
+        self.assertEqual(terminalB['lat'], 33.3333)
+        self.assertEqual(terminalB['lon'], -160.9999)
+    
     def test_get_ferries(self):
         ''' get all ferries '''
         self.simulate_login()
@@ -172,7 +213,10 @@ class TestAPI(unittest.TestCase):
         
         game = database.Game(player = self.user)
         
-        route = database.Route(game = game)
+        seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002)
+        bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171)
+        
+        route = database.Route(game = game, first_terminal = seattle, second_terminal = bainbridge_island)
         
         session.add_all([game])
         session.commit()
@@ -188,7 +232,9 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(len(data), 1)
         
         route = data[0]
+        print(route)
         self.assertEqual(route['game']['player']['id'], self.user.id)
+        self.assertAlmostEqual(route['route_distance'], 7.47, 2)
         # self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         # self.assertEqual(game['cash_available'], 0)    
     

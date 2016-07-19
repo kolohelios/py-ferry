@@ -89,13 +89,18 @@
         "data": [
             {
                 "name": "Seattle",
-                "latitude": 47.6025001,
-                "longitude": -122.33857590000002
+                "lat": 47.6025001,
+                "lon": -122.33857590000002
             },
             {
                 "name": "Bainbridge Island",
-                "latitude": 47.623089,
-                "longitude": -122.511171
+                "lat": 47.623089,
+                "lon": -122.511171
+            },
+            {
+                "name": "Bremerton",
+                "lat": 47.561987,
+                "lon": -122.6273237
             }
         ]
     }

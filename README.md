@@ -25,17 +25,22 @@ There are some images in the /notes folder that are photos that were taken from 
 ### /api - base URI
 no endpoints
 
-### /api/destinations
-GET - returns all of the destinations available
+### /api/terminals
+GET - returns all of the terminals available
 
 ### /api/ferry_classes
 GET - returns all of the ferry classes available
 
 ### /api/games
 GET - returns all games for a user
+POST - create a game for user
 
 ### /api/games/{game ID}
 GET - returns a player's game
+DELETE - destroy a game for user
+
+### /api/games/{game ID}/endturn
+GET ends the current week's turn
 
 ### /api/games/{game ID}/ferries
 GET - returns all of a player's ferries

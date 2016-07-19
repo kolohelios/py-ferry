@@ -117,13 +117,16 @@ class Terminal(Base):
     
     def as_dictionary(self):
         return {
-            "id": self.id
+            "id": self.id,
+            "name": self.name,
+            "lat": self.lat,
+            "lon": self.lon,
         }
     
     id = Column(Integer, primary_key = True)
     name = Column(String, unique = True)
-    latitude = Column(Float)
-    longitude = Column(Float)
+    lat = Column(Float)
+    lon = Column(Float)
 
 # class Base_Route(Base):
 #     __tablename__ = 'base_routes'
@@ -139,13 +142,18 @@ class Route(Base):
         return {
             "id": self.id,
             "game": self.game.as_dictionary(),
+            "first_terminal": self.first_terminal.as_dictionary(),
+            "second_terminal": self.second_terminal.as_dictionary(),
+            "route_distance": self.route_distance(),
         }
     
+    # TODO this isn't accurate because it's point-to-point... so... someday, someone will have to do something about it beyond the ROUTE_ARC_MULTIPLER
+    # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route
     def route_distance(self):
-        place_A = (self.first_terminal.latitude, self.first_terminal.longitude)
-        place_A = (self.first_terminal.latitude, self.first_terminal.longitude)
-        distance = vincenty(place_A, place_B).nm
-        return distance # in nautical miles
+        ROUTE_ARC_MULTIPLER = 1.05
+        place_A = (self.first_terminal.lat, self.first_terminal.lon)
+        place_B = (self.second_terminal.lat, self.second_terminal.lon)
+        return vincenty(place_A, place_B).nm * ROUTE_ARC_MULTIPLER # in nautical miles
     
     id = Column(Integer, primary_key = True)
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
