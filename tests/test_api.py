@@ -26,10 +26,10 @@ class TestAPI(unittest.TestCase):
     """ Tests for the py_ferry API """
 
     def setUp(self):
-        """ Test setup """
+        """ test setup """
         self.client = app.test_client()
 
-        # Set up the tables in the database
+        # set up the tables in the database
         Base.metadata.create_all(engine)
         
         # create an example user
@@ -39,7 +39,7 @@ class TestAPI(unittest.TestCase):
         session.commit()
 
     def tearDown(self):
-        ''' Test teardown '''
+        ''' test teardown '''
         session.close()
         # Remove the tables and their data from the database
         Base.metadata.drop_all(engine)
@@ -92,6 +92,8 @@ class TestAPI(unittest.TestCase):
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
         )
+        
+        # ferry_class_B is a red herring for testing
         ferry_class_B = database.Ferry_Class()
         session.add_all([ferry_class_A, ferry_class_B])
         session.commit()
@@ -152,7 +154,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(terminalB['lon'], -160.9999)
     
     def test_get_ferries(self):
-        ''' get all ferries '''
+        ''' get all ferries associated with a player's game '''
         self.simulate_login()
         
         # Bob and George are red herrings for testing
@@ -169,7 +171,7 @@ class TestAPI(unittest.TestCase):
         session.add_all([bob, george, ferry_class, gameA, gameB, ferryA, ferryB])
         session.commit()
         
-        response = self.client.get('/api/ferries/' + str(gameA.id),
+        response = self.client.get('/api/games/' + str(gameA.id) + '/ferries',
             headers = [('Accept', 'application/json')]
         )
         
@@ -207,6 +209,25 @@ class TestAPI(unittest.TestCase):
         self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         self.assertEqual(game['cash_available'], 0)
         
+    def test_get_empty_routes(self):
+        ''' try to get routes for a game where none exist '''
+        self.simulate_login()
+        
+        game = database.Game(player = self.user)
+        
+        session.add_all([game])
+        session.commit()
+        
+        response = self.client.get('/api/games/' + str(game.id) + '/routes',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 0)
+        
     def test_get_routes(self):
         ''' get a new game for the current user '''
         self.simulate_login()
@@ -218,7 +239,7 @@ class TestAPI(unittest.TestCase):
         
         route = database.Route(game = game, first_terminal = seattle, second_terminal = bainbridge_island)
         
-        session.add_all([game])
+        session.add_all([game, seattle, bainbridge_island])
         session.commit()
         
         response = self.client.get('/api/games/' + str(game.id) + '/routes',
@@ -236,7 +257,55 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(route['game']['player']['id'], self.user.id)
         self.assertAlmostEqual(route['route_distance'], 7.47, 2)
         # self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
-        # self.assertEqual(game['cash_available'], 0)    
+        # self.assertEqual(game['cash_available'], 0)  
+        
+    def test_game_endturn(self):
+        ''' end the current turn, run the simulation cycle, and test the response '''
+        self.simulate_login()
+        
+        # create a new game
+        game = database.Game(player = self.user)
+        
+        # create terminals
+        seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002)
+        bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171)
+        
+        # create route
+        route = database.Route(game = game, first_terminal = seattle, second_terminal = bainbridge_island)
+        
+        # TODO ferry_class_props should be moved outside of this function as it duplicates an object for another test
+        # create a ferry class
+        ferry_class_props = { 
+            'name': 'Jumbo Mark II',
+            'passengers': 2500,
+            'cars': 202,
+            'max_commercial': 60,
+            'speed': 21,
+            'burn_rate': 350
+        }
+        ferry_class_A = database.Ferry_Class(
+            name = ferry_class_props['name'],
+            passengers = ferry_class_props['passengers'],
+            cars = ferry_class_props['cars'],
+            max_commercial = ferry_class_props['max_commercial'],
+            speed = ferry_class_props['speed'],
+            burn_rate = ferry_class_props['burn_rate'],
+        )
+        
+        ferry = database.Ferry(game = game, ferry_class = ferry_class_A, route = route)
+        
+        session.add_all([game, seattle, bainbridge_island, route, ferry_class_A, ferry])
+        session.commit()
+        
+        response = self.client.get('/api/games/' + str(game.id) + '/endturn',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        # data = json.loads(response.data.decode('ascii'))
+        # self.assertEqual(len(data), 1)
     
 if __name__ == '__main__':
     unittest.main()

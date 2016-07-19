@@ -1,0 +1,12 @@
+language: python
+python:
+    - "3.4"
+install: python3 -m pip install -r requirements.txt
+env:
+    - CONFIG_PATH=py_ferry.config.TravisConfig
+before_script:
+    - psql -c 'create database "py-ferry-test";' -U postgres
+script:
+    - python3 manage.py test
+    # any other tests here
+    
