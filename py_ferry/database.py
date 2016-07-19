@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, Sequence, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
+from geopy.distance import vincenty
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -17,8 +18,19 @@ Base = declarative_base()
 Session = sessionmaker(bind = engine)
 session = Session()
 
+def unix_timestamp(date_time):
+    if not date_time:
+        return None
+    return int(date_time.strftime("%s"))
+
 class User(Base, UserMixin):
     __tablename__ = 'users'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+        }
     
     id = Column(Integer, primary_key = True)
     name = Column(String(64), unique = True)
@@ -86,7 +98,10 @@ class Game(Base):
     
     def as_dictionary(self):
         return {
-            "id": self.id
+            "id": self.id,
+            "player": self.player.as_dictionary(),
+            "created_date": unix_timestamp(self.created_date),
+            "cash_available": self.cash_available,
         }
     
     id = Column(Integer, primary_key = True)
@@ -106,16 +121,31 @@ class Terminal(Base):
         }
     
     id = Column(Integer, primary_key = True)
+    name = Column(String, unique = True)
+    latitude = Column(Float)
+    longitude = Column(Float)
 
-class Base_Route(Base):
-    __tablename__ = 'base_routes'
+# class Base_Route(Base):
+#     __tablename__ = 'base_routes'
     
-    id = Column(Integer, primary_key = True)
+#     id = Column(Integer, primary_key = True)
     
-    routes = relationship('Route', backref = 'base_route')
+#     routes = relationship('Route', backref = 'base_route')
 
 class Route(Base):
     __tablename__ = 'routes'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "game": self.game.as_dictionary(),
+        }
+    
+    def route_distance(self):
+        place_A = (self.first_terminal.latitude, self.first_terminal.longitude)
+        place_A = (self.first_terminal.latitude, self.first_terminal.longitude)
+        distance = vincenty(place_A, place_B).nm
+        return distance # in nautical miles
     
     id = Column(Integer, primary_key = True)
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
@@ -124,7 +154,7 @@ class Route(Base):
     first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
     second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
     
-    base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
+    # base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
 Base.metadata.create_all(engine)

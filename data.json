@@ -83,6 +83,20 @@
                 "residual_value": 2000000
             }
         ]
-    }    
-    
+    },
+    {
+        "model_name": "Terminal",
+        "data": [
+            {
+                "name": "Seattle",
+                "latitude": 47.6025001,
+                "longitude": -122.33857590000002
+            },
+            {
+                "name": "Bainbridge Island",
+                "latitude": 47.623089,
+                "longitude": -122.511171
+            }
+        ]
+    }
 ]

@@ -17,6 +17,11 @@ from py_ferry import app
 from py_ferry import database
 from py_ferry.database import Base, engine, session
 
+def unix_timestamp(date_time):
+    if not date_time:
+        return None
+    return int(date_time.strftime("%s"))
+
 class TestAPI(unittest.TestCase):
     """ Tests for the py_ferry API """
 
@@ -137,31 +142,55 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(ferryA['ferry_class']['name'], ferry_class_props['name'])
         self.assertEqual(ferryA['name'], 'Puget Rider')
         
-    # def test_get_new_game(self):
-    #     ''' get a new game for the current user '''
-    #     self.simulate_login()
+    def test_get_new_game(self):
+        ''' get a new game for the current user '''
+        self.simulate_login()
         
-    #     game = models.Game(player_id = self.user.id)
+        game = database.Game(player = self.user)
         
-    #     session.add_all([game])
-    #     session.commit()
+        session.add_all([game])
+        session.commit()
         
-    #     response = self.client.get('/api/games',
-    #         headers = [('Accept', 'application/json')]
-    #     )
+        response = self.client.get('/api/games',
+            headers = [('Accept', 'application/json')]
+        )
         
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.mimetype, 'application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
         
-    #     data = json.loads(response.data.decode('ascii'))
-    #     self.assertEqual(len(data), 1)
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 1)
         
-    #     game = data[0]
-    #     self.assertEqual(game['player_id'], self.user.id)
-    #     self.assertLessEqual(game['created_date'], datetime.now)
-    #     self.assertEqual(game['cash_available'], 0)
-    #     self.assertEqual(game['player_id'], self.user.id)
+        game = data[0]
+        self.assertEqual(game['player']['id'], self.user.id)
+        self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
+        self.assertEqual(game['cash_available'], 0)
         
+    def test_get_routes(self):
+        ''' get a new game for the current user '''
+        self.simulate_login()
         
+        game = database.Game(player = self.user)
+        
+        route = database.Route(game = game)
+        
+        session.add_all([game])
+        session.commit()
+        
+        response = self.client.get('/api/games/' + str(game.id) + '/routes',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 1)
+        
+        route = data[0]
+        self.assertEqual(route['game']['player']['id'], self.user.id)
+        # self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
+        # self.assertEqual(game['cash_available'], 0)    
+    
 if __name__ == '__main__':
     unittest.main()

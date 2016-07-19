@@ -10,3 +10,4 @@ psycopg2
 flask-login
 flask-script
 flask-migrate
+geopy
