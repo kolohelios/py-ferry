@@ -307,5 +307,8 @@ class TestAPI(unittest.TestCase):
         # data = json.loads(response.data.decode('ascii'))
         # self.assertEqual(len(data), 1)
     
+    def test_this_will_fail(self):
+        self.assertEqual(True, False)
+    
 if __name__ == '__main__':
     unittest.main()
