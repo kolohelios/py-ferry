@@ -304,11 +304,21 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, 'application/json')
         
-        # data = json.loads(response.data.decode('ascii'))
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['message'], 'success')
+
+        response = self.client.get('/api/games/' + str(game.id),
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
         # self.assertEqual(len(data), 1)
+        
+        self.assertEqual(data['current_week'], 1)
     
-    def test_this_will_fail(self):
-        self.assertEqual(True, False)
     
 if __name__ == '__main__':
     unittest.main()

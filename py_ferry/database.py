@@ -103,6 +103,7 @@ class Game(Base):
             "player": self.player.as_dictionary(),
             "created_date": unix_timestamp(self.created_date),
             "cash_available": self.cash_available,
+            "current_week": self.current_week,
         }
     
     id = Column(Integer, primary_key = True)

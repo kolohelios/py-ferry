@@ -72,6 +72,21 @@ def games_get():
     data = json.dumps([game.as_dictionary() for game in games])
     return Response(data, 200, mimetype = 'application/json')
     
+@app.route('/api/games/<int:game_id>', methods = ['GET'])
+@login_required
+@decorators.accept('application/json')
+def games_get_one(game_id):
+    ''' get player game '''
+
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_user:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+
+    data = json.dumps(game.as_dictionary())
+    return Response(data, 200, mimetype = 'application/json')
+    
 @app.route('/api/games/<int:game_id>/routes', methods = ['GET'])
 @login_required
 @decorators.accept('application/json')
@@ -100,9 +115,11 @@ def games_endturn(game_id):
     if not game.player == current_user:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
+        
+    game.current_week += 1
+    session.commit()
     
     # routes = session.query(database.Route).filter(database.Route.game == game)
 
-    # data = json.dumps([route.as_dictionary() for route in routes])
-    data = {'message': 'placeholder'}
+    data = json.dumps({'message': 'success'})
     return Response(data, 200, mimetype = 'application/json')
