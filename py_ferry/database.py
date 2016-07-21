@@ -113,6 +113,7 @@ class Game(Base):
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
     routes = relationship('Route', backref = 'game')
+    turn_results = relationship('Turn_Result', backref = 'game')
     
 class Terminal(Base):
     __tablename__ = 'terminals'
@@ -167,5 +168,19 @@ class Route(Base):
     # base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'route')
+    
+class Turn_Result(Base):
+    __tablename__ = 'turn_results'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "game_id": self.game_id,
+            "week_number": self.week_number,
+        }
+        
+    id = Column(Integer, primary_key = True)
+    week_number = Column(Integer, nullable = False)
+    game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
 Base.metadata.create_all(engine)

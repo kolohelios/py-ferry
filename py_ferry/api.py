@@ -116,10 +116,34 @@ def games_endturn(game_id):
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
         
+    
+    turn_result = database.Turn_Result(game = game, week_number = game.current_week)
+    session.add(turn_result)
+    
     game.current_week += 1
+    
     session.commit()
     
     # routes = session.query(database.Route).filter(database.Route.game == game)
 
     data = json.dumps({'message': 'success'})
+    return Response(data, 200, mimetype = 'application/json')
+    
+@app.route('/api/games/<int:game_id>/turn-results/<int:week_number>', methods = ['GET'])
+@login_required
+@decorators.accept('application/json')
+def games_get_turn(game_id, week_number):
+    ''' get turn results given a game ID and week number '''
+
+    # make sure the game ID belongs to the current user
+    # TODO we probably don't have to get the game explicitly, we can probable jsut access the player through the game property
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_user:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+
+    # TODO we need to refactor the following query if we drop using the explicit game record check
+    turn_results = session.query(database.Turn_Result).filter(game == game, week_number == week_number)[0]
+
+    data = json.dumps(turn_results.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')

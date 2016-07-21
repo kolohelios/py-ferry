@@ -318,7 +318,13 @@ class TestAPI(unittest.TestCase):
         # self.assertEqual(len(data), 1)
         
         self.assertEqual(data['current_week'], 1)
-    
-    
+        
+        response = self.client.get('/api/games/' + str(game.id) + '/turn-results/' + str(game.current_week), 
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
 if __name__ == '__main__':
     unittest.main()
