@@ -42,8 +42,8 @@ class User(Base, UserMixin):
 
 class Ferry_Class(Base):
     '''
-    The ferry model is the core of the project
-    because that's what this game is all about!
+    The ferry class model contains the ferry classes that form the basis for
+    ferries that users buy and sell.
     '''
     __tablename__ = 'ferry_classes'
     
@@ -92,6 +92,7 @@ class Ferry(Base):
     launched = Column(DateTime)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
+    route_id = Column(Integer, ForeignKey('routes.id'))
     
 class Game(Base):
     __tablename__ = 'games'
@@ -102,6 +103,7 @@ class Game(Base):
             "player": self.player.as_dictionary(),
             "created_date": unix_timestamp(self.created_date),
             "cash_available": self.cash_available,
+            "current_week": self.current_week,
         }
     
     id = Column(Integer, primary_key = True)
@@ -111,6 +113,7 @@ class Game(Base):
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
     routes = relationship('Route', backref = 'game')
+    turn_results = relationship('Turn_Result', backref = 'game')
     
 class Terminal(Base):
     __tablename__ = 'terminals'
@@ -147,9 +150,9 @@ class Route(Base):
             "route_distance": self.route_distance(),
         }
     
-    # TODO this isn't accurate because it's point-to-point... so... someday, someone will have to do something about it beyond the ROUTE_ARC_MULTIPLER
     # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route
     def route_distance(self):
+        # TODO this isn't accurate because it's point-to-point... so... someday, someone will have to do something about it beyond the ROUTE_ARC_MULTIPLER
         ROUTE_ARC_MULTIPLER = 1.05
         place_A = (self.first_terminal.lat, self.first_terminal.lon)
         place_B = (self.second_terminal.lat, self.second_terminal.lon)
@@ -163,6 +166,21 @@ class Route(Base):
     second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
     
     # base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
+    game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
+    ferries = relationship('Ferry', backref = 'route')
+    
+class Turn_Result(Base):
+    __tablename__ = 'turn_results'
+    
+    def as_dictionary(self):
+        return {
+            "id": self.id,
+            "game_id": self.game_id,
+            "week_number": self.week_number,
+        }
+        
+    id = Column(Integer, primary_key = True)
+    week_number = Column(Integer, nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
 Base.metadata.create_all(engine)
