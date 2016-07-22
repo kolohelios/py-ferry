@@ -7,6 +7,7 @@ env:
 before_script:
     - psql -c 'create database "py-ferry-test";' -U postgres
 script:
-    - PYTHONPATH=. python3 tests/test_api.py
+    - PYTHONPATH=. python3 tests/test_api_integration.py
     - PYTHONPATH=. python3 tests/test_views_integration.py
+    - PYTHONPATH=. python3 tests/test_models_unit.py
     

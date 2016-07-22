@@ -9,6 +9,7 @@ from jsonschema import validate, ValidationError
 from . import decorators
 from py_ferry import app
 from py_ferry import database
+from py_ferry import models
 from .database import session
 
 # def current_user_authorized(record_type, id):
@@ -123,8 +124,6 @@ def games_endturn(game_id):
     game.current_week += 1
     
     session.commit()
-    
-    # routes = session.query(database.Route).filter(database.Route.game == game)
 
     data = json.dumps({'message': 'success'})
     return Response(data, 200, mimetype = 'application/json')
