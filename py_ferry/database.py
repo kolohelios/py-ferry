@@ -147,6 +147,7 @@ class Route(Base):
             "first_terminal": self.first_terminal.as_dictionary(),
             "second_terminal": self.second_terminal.as_dictionary(),
             "route_distance": self.route_distance(),
+            "fare": self.fare,
         }
     
     # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route
@@ -158,6 +159,7 @@ class Route(Base):
         return vincenty(place_A, place_B).nm * ROUTE_ARC_MULTIPLER # in nautical miles
     
     id = Column(Integer, primary_key = True)
+    fare = Column(Float)
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     
