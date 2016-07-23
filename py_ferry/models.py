@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 
 class Fuel(object):
-    
+    ''' properties and methods related to fuel costing '''
     def __init__(self):
         self.fuel_cost = 417.05
         self.gals_in_oil_bbl = 41
@@ -87,3 +87,16 @@ class Passengers(object):
         offset_years = year - self.base_year
         base_demand = base_demand * (self.growth_rate ** offset_years)
         return base_demand
+        
+    # days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    # for day in days:
+    #     print(day)
+    #     car_queue = 0
+    #     for hour in range(0, 24):
+    #         for minute in range (0, 60):
+    #             car_queue += round((self.passengers.demand(day, hour, 'August', 2016) * route.riders / 23) / 60)
+    #             for time in schedule.times:
+    #                 if time == hour + minute / 60:
+    #                     print('car_queue', car_queue)
+    #                     car_queue -= min(ferry.cars, car_queue)
+    #                     print('loading up!', math.trunc(time), ':', str(round(time % 1 * 60)).zfill(2), end = ' ')
