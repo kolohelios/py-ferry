@@ -11,8 +11,6 @@ try: from urllib.parse import urlparse
 except ImportError: from urlparse import urlparse
 from io import StringIO, BytesIO
 
-import sys
-
 from py_ferry import app
 from py_ferry import database
 from py_ferry.database import Base, engine, session
@@ -208,6 +206,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(game['player']['id'], self.user.id)
         self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         self.assertEqual(game['cash_available'], 0)
+        self.assertEqual(game['current_week'], 1)
+        self.assertEqual(game['current_year'], 2000)
         
     def test_get_empty_routes(self):
         ''' try to get routes for a game where none exist '''
@@ -317,7 +317,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('ascii'))
         # self.assertEqual(len(data), 1)
         
-        self.assertEqual(data['current_week'], 1)
+        self.assertEqual(data['current_week'], 2)
         
         response = self.client.get('/api/games/' + str(game.id) + '/turn-results/' + str(game.current_week), 
             headers = [('Accept', 'application/json')]

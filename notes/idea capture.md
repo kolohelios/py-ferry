@@ -32,6 +32,8 @@
 * each of these "events" has a unique amount of demand, likelihood of a round-trip
 * passenger won't initiate trip that's round-trip unless there's return options
 
+basically, add events as a feature
+
 # turns
 * simulate routes
   start at midnight, run routes
@@ -41,10 +43,10 @@
   * construction
   * route management
 
-# shifts
-5 x 8
-4 x 10
-3 x 12
+# shifts:
+* 5 x 8
+* 4 x 10
+* 3 x 12
 
 # ferry configuration
 * number of decks:
@@ -115,3 +117,17 @@ users
 	have ferries
 	have routes
 		have schedules
+		
+maybe instead of money, we can:
+* use some sort of analog for resource simplication through *resource conversion*
+* use passengers to earn staff
+* use cars/vehicles to earn fuel
+* get subsidy from the state to cover a certain amount of staff and fuel
+* instead of acquisition cost, we could use customer credibilty/reputation
+
+for example, 200 barrels of diesel and 30 staff could be a subsidy
+dependent on difficulty?
+
+staffing for terminals *and* ferries?
+
+game balance is the big challenge

@@ -90,17 +90,20 @@
             {
                 "name": "Seattle",
                 "lat": 47.6025001,
-                "lon": -122.33857590000002
+                "lon": -122.33857590000002,
+                "passenger_pool": 30000
             },
             {
                 "name": "Bainbridge Island",
                 "lat": 47.623089,
-                "lon": -122.511171
+                "lon": -122.511171,
+                "passenger_pool": 30000
             },
             {
                 "name": "Bremerton",
                 "lat": 47.561987,
-                "lon": -122.6273237
+                "lon": -122.6273237,
+                "passenger_pool": 16000
             }
         ]
     }

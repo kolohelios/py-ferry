@@ -104,11 +104,13 @@ class Game(Base):
             "created_date": unix_timestamp(self.created_date),
             "cash_available": self.cash_available,
             "current_week": self.current_week,
+            "current_year": self.current_year,
         }
     
     id = Column(Integer, primary_key = True)
     created_date = Column(DateTime, default = datetime.now)
-    current_week = Column(Integer, default = 0)
+    current_week = Column(Integer, default = 1)
+    current_year = Column(Integer, default = 2000)
     cash_available = Column(Float, default = 0)
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
@@ -124,19 +126,14 @@ class Terminal(Base):
             "name": self.name,
             "lat": self.lat,
             "lon": self.lon,
+            "passenger_pool": self.passenger_pool,
         }
     
     id = Column(Integer, primary_key = True)
     name = Column(String, unique = True)
     lat = Column(Float)
     lon = Column(Float)
-
-# class Base_Route(Base):
-#     __tablename__ = 'base_routes'
-    
-#     id = Column(Integer, primary_key = True)
-    
-#     routes = relationship('Route', backref = 'base_route')
+    passenger_pool = Column(Integer)
 
 class Route(Base):
     __tablename__ = 'routes'
