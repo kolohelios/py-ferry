@@ -87,33 +87,20 @@ class Passenger(object):
         self.growth_rate = 1.025
 
     def route_passenger_demand(self, passengers, hour, day, week, year):
-        week_floor = math.floor(week / 4 + 1)
+        week_floor = math.floor(week / 4) * 4 + 1
         base_demand = self.day_demand[day][hour] * self.week_demand[week_floor]
         offset_years = year - self.base_year
         base_demand = base_demand * (self.growth_rate ** offset_years)
         return round(base_demand * passengers / 24)
         
-    def week_route_passenger_demand(self, passengers, week, year):
-        route_total = 0
-        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        for day in days:
-            for hour in range(0, 23):
-                route_total += self.route_passenger_demand(passengers, hour, day, week, year)
-        return route_total
+    # def week_route_passenger_demand(self, passengers, week, year):
+    #     route_total = 0
+    #     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    #     for day in days:
+    #         for hour in range(0, 23):
+    #             route_total += self.route_passenger_demand(passengers, hour, day, week, year)
+    #     return route_total
         
-    # days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    # for day in days:
-    #     print(day)
-    #     car_queue = 0
-    #     for hour in range(0, 24):
-    #         for minute in range (0, 60):
-    #             car_queue += round((self.passengers.demand(day, hour, 'August', 2016) * route.riders / 23) / 60)
-    #             for time in schedule.times:
-    #                 if time == hour + minute / 60:
-    #                     print('car_queue', car_queue)
-    #                     car_queue -= min(ferry.cars, car_queue)
-    #                     print('loading up!', math.trunc(time), ':', str(round(time % 1 * 60)).zfill(2), end = ' ')
-    
 class Schedule(object):
     def __init__(self):
         self.full_staffing = {
@@ -202,11 +189,61 @@ class Schedule(object):
         last_shift_hour = self.last_run(shift_mapping)
         run_interval = self.route_interval(route)
         
-        next_time = first_shift_hour
-        while next_time < last_shift_hour:
-            if self.full_staffing[shift_mapping][int(next_time)] == True:
-                schedule.append(next_time)
-            next_time += run_interval
-        
+        # TODO change logic so that ferries always start at the first terminal and end at the first terminal (maybe)
+        next_crossing = { 'time': first_shift_hour, 'departs': route['first_terminal'], 'arrives': route['second_terminal'] }
+        while next_crossing['time'] < last_shift_hour:
+            if self.full_staffing[shift_mapping][int(next_crossing['time'])] == True:
+                schedule.append(next_crossing)
+            next_crossing = { 
+                'time': next_crossing['time'] + run_interval, 
+                'departs': next_crossing['arrives'],
+                'arrives': next_crossing['departs'],
+            }
+            
         return schedule
+    
+class Sailings(object):
+    
+    def __init__(self):
+        pass
+    
+    def daily_crossings(self, route, day, week, year):
+        schedule = Schedule().build_schedule(route, day)
+        first_terminal_passenger_queue = 0
+        second_terminal_passenger_queue = 0
+        total_passengers_carried = 0
+        for time in range(0, 23):
+            first_terminal_passenger_queue += Passenger().route_passenger_demand(route['first_terminal']['passenger_pool'], time, day, week, year)
+            second_terminal_passenger_queue += Passenger().route_passenger_demand(route['second_terminal']['passenger_pool'], time, day, week, year)
+            for sailing in schedule:
+                # TODO the if block below can probably be changed to parametric expressions that use route[terminal]
+                if sailing['departs'] == route['first_terminal']:
+                    passengers = min(route['ferries'][0]['ferry_class']['passengers'], first_terminal_passenger_queue)
+                    first_terminal_passenger_queue -= passengers
+                    total_passengers_carried += passengers
+                else:
+                    passengers = min(route['ferries'][0]['ferry_class']['passengers'], second_terminal_passenger_queue)
+                    second_terminal_passenger_queue -= passengers
+                    total_passengers_carried += passengers
+        return total_passengers_carried
+   
+    def weekly_crossings(self, route, week, year):
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        total_passengers = 0
+        for day in days:
+            total_passengers += self.daily_crossings(route, day, week, year)
+        return total_passengers
+    
+    # days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    # for day in days:
+    #     print(day)
+    #     car_queue = 0
+    #     for hour in range(0, 24):
+    #         for minute in range (0, 60):
+    #             car_queue += round((self.passengers.demand(day, hour, 'August', 2016) * route.riders / 23) / 60)
+    #             for time in schedule.times:
+    #                 if time == hour + minute / 60:
+    #                     print('car_queue', car_queue)
+    #                     car_queue -= min(ferry.cars, car_queue)
+    #                     print('loading up!', math.trunc(time), ':', str(round(time % 1 * 60)).zfill(2), end = ' ')
     
