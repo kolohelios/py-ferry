@@ -42,25 +42,33 @@ class ModelTests(unittest.TestCase):
             'route_distance': 7.1,
             'first_terminal': {
                 'id': 1,
-                'passenger_pool': 30000,
+                'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
             'second_terminal': {
                 'id': 2,
-                'passenger_pool': 30000,
+                'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
             'ferries': [
                     {
                         'speed': 18,
                         'turnover_time': 0.2,
                         'ferry_class': {
-                            'passengers': 2500
+                            'passengers': 2500,
+                            'cars': 200,
+                            'trucks': 60
                         }
                         
                     }
                 ]
         }
         daily_results = Sailings().daily_crossings(route, 'Tuesday', 7, 2016)
-        self.assertEqual(daily_results['total_passengers'], 18901)
+        self.assertEqual(daily_results['total_passengers'], 8194)
+        self.assertEqual(daily_results['total_cars'], 1264)
+        self.assertEqual(daily_results['total_trucks'], 188)
         self.assertEqual(daily_results['total_sailings'], 32)
         self.assertEqual(daily_results['total_hours'], 20)
         
@@ -70,17 +78,23 @@ class ModelTests(unittest.TestCase):
             'first_terminal': {
                 'id': 1,
                 'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
             'second_terminal': {
                 'id': 2,
                 'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
             'ferries': [
                     {
                         'speed': 18,
                         'turnover_time': 0.2,
                         'ferry_class': {
-                            'passengers': 2500
+                            'passengers': 2500,
+                            'cars': 200,
+                            'trucks': 60,
                         }
                         
                     }
@@ -88,6 +102,8 @@ class ModelTests(unittest.TestCase):
         }
         weekly_results = Sailings().weekly_crossings(route, 7, 2016)
         self.assertEqual(weekly_results['total_passengers'], 56218)
+        self.assertEqual(weekly_results['total_cars'], 8672)
+        self.assertEqual(weekly_results['total_trucks'], 1290)
         self.assertEqual(weekly_results['total_sailings'], 245)
         self.assertEqual(weekly_results['total_hours'], 152)
     
@@ -97,18 +113,26 @@ class ModelTests(unittest.TestCase):
             'first_terminal': {
                 'id': 1,
                 'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
             'second_terminal': {
                 'id': 2,
                 'passenger_pool': 13000,
+                'car_pool': 2000,
+                'truck_pool': 300,
             },
-            'fare': 8,
+            'passenger_fare': 8,
+            'car_fare': 18,
+            'truck_fare': 50,
             'ferries': [
                     {
                         'speed': 18,
                         'turnover_time': 0.2,
                         'ferry_class': {
                             'passengers': 2500,
+                            'cars': 200,
+                            'trucks': 60,
                             'burn_rate': 350,
                         }
                         
@@ -117,8 +141,13 @@ class ModelTests(unittest.TestCase):
         }
         weekly_results = Financial_Calc().calc_weekly_results_for_route(route, 7, 2016)
         self.assertEqual(weekly_results['passengers'], 56218)
+        self.assertEqual(weekly_results['cars'], 8672)
+        self.assertEqual(weekly_results['trucks'], 1290)
         self.assertEqual(weekly_results['fuel_used'], 53200)
         self.assertAlmostEqual(weekly_results['fuel_cost'], 541147.80, 2)
-
+        self.assertAlmostEqual(weekly_results['passenger_revenue'], 449744, 2)
+        self.assertAlmostEqual(weekly_results['car_revenue'], 156096, 2)
+        self.assertAlmostEqual(weekly_results['truck_revenue'], 64500, 2)
+        
 if __name__ == '__main__':
     unittest.main()

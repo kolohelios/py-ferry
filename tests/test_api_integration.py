@@ -78,7 +78,7 @@ class TestAPI(unittest.TestCase):
             'name': 'Jumbo Mark II',
             'passengers': 2500,
             'cars': 202,
-            'max_commercial': 60,
+            'trucks': 60,
             'speed': 21,
             'burn_rate': 350
         }
@@ -86,7 +86,7 @@ class TestAPI(unittest.TestCase):
             name = ferry_class_props['name'],
             passengers = ferry_class_props['passengers'],
             cars = ferry_class_props['cars'],
-            max_commercial = ferry_class_props['max_commercial'],
+            trucks = ferry_class_props['trucks'],
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
         )
@@ -279,7 +279,7 @@ class TestAPI(unittest.TestCase):
             'name': 'Jumbo Mark II',
             'passengers': 2500,
             'cars': 202,
-            'max_commercial': 60,
+            'trucks': 60,
             'speed': 21,
             'burn_rate': 350
         }
@@ -287,7 +287,7 @@ class TestAPI(unittest.TestCase):
             name = ferry_class_props['name'],
             passengers = ferry_class_props['passengers'],
             cars = ferry_class_props['cars'],
-            max_commercial = ferry_class_props['max_commercial'],
+            trucks = ferry_class_props['trucks'],
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
         )

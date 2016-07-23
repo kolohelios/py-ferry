@@ -53,7 +53,7 @@ class Ferry_Class(Base):
             "name": self.name,
             "passengers": self.passengers,
             "cars": self.cars,
-            "max_commercial": self.max_commercial,
+            "trucks": self.trucks,
             "speed": self.speed,
             "burn_rate": self.burn_rate,
         }
@@ -62,7 +62,7 @@ class Ferry_Class(Base):
     name = Column(String(64), unique = True)
     passengers = Column(Integer)
     cars = Column(Integer)
-    max_commercial = Column(Integer) # maximum commercial vehicles
+    trucks = Column(Integer) # maximum tall vehicle spaces
     speed = Column(Integer) # knots
     burn_rate = Column(Integer) # fuel consumption per hour
     cost = Column(Integer) # acquisition cost
@@ -129,6 +129,8 @@ class Terminal(Base):
             "lat": self.lat,
             "lon": self.lon,
             "passenger_pool": self.passenger_pool,
+            "car_pool": self.car_pool,
+            "truck_pool": self.truck_pool,
         }
     
     id = Column(Integer, primary_key = True)
@@ -136,6 +138,8 @@ class Terminal(Base):
     lat = Column(Float)
     lon = Column(Float)
     passenger_pool = Column(Integer)
+    car_pool = Column(Integer)
+    truck_pool = Column(Integer)
 
 class Route(Base):
     __tablename__ = 'routes'
@@ -147,7 +151,9 @@ class Route(Base):
             "first_terminal": self.first_terminal.as_dictionary(),
             "second_terminal": self.second_terminal.as_dictionary(),
             "route_distance": self.route_distance(),
-            "fare": self.fare,
+            "passenger_fare": self.passenger_fare,
+            "car_fare": self.car_fare,
+            "truck_fare": self.truck_fare,
         }
     
     # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route
@@ -159,7 +165,9 @@ class Route(Base):
         return vincenty(place_A, place_B).nm * ROUTE_ARC_MULTIPLER # in nautical miles
     
     id = Column(Integer, primary_key = True)
-    fare = Column(Float)
+    passenger_fare = Column(Float)
+    car_fare = Column(Float)
+    truck_fare = Column(Float)
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     
@@ -182,6 +190,12 @@ class Turn_Result(Base):
         
     id = Column(Integer, primary_key = True)
     week_number = Column(Integer, nullable = False)
+    total_passengers = Column(Integer)
+    fuel_used = Column(Integer)
+    fuel_cost = Column(Float)
+    passenger_revenue = Column(Float)
+    car_revenue = Column(Float)
+    truck_revenue = Column(Float)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
 Base.metadata.create_all(engine)
