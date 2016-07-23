@@ -4,7 +4,7 @@ import unittest
 import py_ferry
 from py_ferry.models import *
 
-class FilterTests(unittest.TestCase):
+class ModelTests(unittest.TestCase):
     def test_fuel_cost(self):
         fuel_cost = Fuel().cost_per_gallon()
         self.assertAlmostEqual(fuel_cost, 10.17, 2)
@@ -16,11 +16,6 @@ class FilterTests(unittest.TestCase):
     def test_passenger_demand(self):
         demand = Passenger().route_passenger_demand(30000, 7, 'Tuesday', 3, 2016)
         self.assertEqual(demand, 831)
-    
-    # this is unnecessary because we'll get deamnd for each crossing
-    # def test_week_passenger_demand(self):
-    #     demand = Passenger().week_route_passenger_demand(30000, 3, 2016)
-    #     self.assertEqual(demand, 65454)
         
     def test_build_schedule(self):
         route = {
@@ -64,19 +59,21 @@ class FilterTests(unittest.TestCase):
                     }
                 ]
         }
-        passengers = Sailings().daily_crossings(route, 'Tuesday', 7, 2016)
-        self.assertEqual(passengers, 19076)
+        daily_results = Sailings().daily_crossings(route, 'Tuesday', 7, 2016)
+        self.assertEqual(daily_results['total_passengers'], 18901)
+        self.assertEqual(daily_results['total_sailings'], 32)
+        self.assertEqual(daily_results['total_hours'], 20)
         
     def test_weekly_crossings(self):
         route = {
             'route_distance': 7.1,
             'first_terminal': {
                 'id': 1,
-                'passenger_pool': 30000,
+                'passenger_pool': 13000,
             },
             'second_terminal': {
                 'id': 2,
-                'passenger_pool': 30000,
+                'passenger_pool': 13000,
             },
             'ferries': [
                     {
@@ -89,8 +86,39 @@ class FilterTests(unittest.TestCase):
                     }
                 ]
         }
-        passengers = Sailings().weekly_crossings(route, 7, 2016)
-        self.assertEqual(passengers, 130908)
+        weekly_results = Sailings().weekly_crossings(route, 7, 2016)
+        self.assertEqual(weekly_results['total_passengers'], 56218)
+        self.assertEqual(weekly_results['total_sailings'], 245)
+        self.assertEqual(weekly_results['total_hours'], 152)
+    
+    def test_calc_turn_results(self):
+        route = {
+            'route_distance': 7.1,
+            'first_terminal': {
+                'id': 1,
+                'passenger_pool': 13000,
+            },
+            'second_terminal': {
+                'id': 2,
+                'passenger_pool': 13000,
+            },
+            'fare': 8,
+            'ferries': [
+                    {
+                        'speed': 18,
+                        'turnover_time': 0.2,
+                        'ferry_class': {
+                            'passengers': 2500,
+                            'burn_rate': 350,
+                        }
+                        
+                    }
+                ]
+        }
+        weekly_results = Financial_Calc().calc_weekly_results_for_route(route, 7, 2016)
+        self.assertEqual(weekly_results['passengers'], 56218)
+        self.assertEqual(weekly_results['fuel_used'], 53200)
+        self.assertAlmostEqual(weekly_results['fuel_cost'], 541147.80, 2)
 
 if __name__ == '__main__':
     unittest.main()
