@@ -90,6 +90,8 @@ class Ferry(Base):
     id = Column(Integer, primary_key = True)
     name = Column(String(64))
     launched = Column(DateTime)
+    # TODO turnover_time should come from the class maybe, and then based on staffing
+    turnover_time = Column(Integer)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     route_id = Column(Integer, ForeignKey('routes.id'))
