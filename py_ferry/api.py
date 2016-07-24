@@ -116,9 +116,20 @@ def games_endturn(game_id):
     if not game.player == current_user:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
-        
     
-    turn_result = database.Turn_Result(game = game, week_number = game.current_week)
+    routes = session.query(database.Route).filter(game == game)
+    
+    route = routes[0]
+    
+    weekly_results = models.Financial_Calc().calc_weekly_results_for_route(
+        route, game.current_week, game.current_year
+    )
+        
+    turn_result = database.Turn_Result(
+        game = game,
+        week_number = game.current_week,
+        total_passengers = weekly_results['passengers']
+    )
     session.add(turn_result)
     
     game.current_week += 1

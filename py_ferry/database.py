@@ -56,6 +56,7 @@ class Ferry_Class(Base):
             "trucks": self.trucks,
             "speed": self.speed,
             "burn_rate": self.burn_rate,
+            "turnover_time": self.turnover_time,
         }
     
     id = Column(Integer, primary_key = True)
@@ -68,6 +69,7 @@ class Ferry_Class(Base):
     cost = Column(Integer) # acquisition cost
     residual_value = Column(Integer) # minimum asset value
     usable_life = Column(Integer)
+    turnover_time = Column(Integer)
     
     ferry = relationship('Ferry', backref = 'ferry_class')
 
@@ -90,8 +92,6 @@ class Ferry(Base):
     id = Column(Integer, primary_key = True)
     name = Column(String(64))
     launched = Column(DateTime)
-    # TODO turnover_time should come from the class maybe, and then based on staffing
-    turnover_time = Column(Integer)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     route_id = Column(Integer, ForeignKey('routes.id'))
