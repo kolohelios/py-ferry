@@ -72,6 +72,7 @@ class Ferry_Class(Base):
     turnover_time = Column(Integer)
     
     ferry = relationship('Ferry', backref = 'ferry_class')
+    ferry_result = relationship('Ferry_Result', backref = 'ferry_class')
 
 class Ferry(Base):
     __tablename__ = 'ferries'
@@ -168,15 +169,57 @@ class Route(Base):
     passenger_fare = Column(Float)
     car_fare = Column(Float)
     truck_fare = Column(Float)
+    
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
-    
     first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
     second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
     
     # base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'route')
+    
+class Ferry_Result(Base):
+    __tablename__ = 'ferry_results'
+    
+    def as_dictonary(self):
+        return {
+            "id": self.id
+        }
+    
+    id = Column(Integer, primary_key = True)
+    name = Column(String)
+    total_passengers = Column(Integer)
+    total_cars = Column(Integer)
+    total_trucks = Column(Integer)
+    fuel_used = Column(Float)
+    sailings = Column(Integer)
+    
+    ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
+    
+    route_result_id = Column(Integer, ForeignKey('route_results.id'))
+
+class Route_Result(Base):
+    __tablename__ = 'route_results'
+
+    def as_dictonary(self):
+        return {
+            "id": self.id
+        }
+        
+    id = Column(Integer, primary_key = True)
+    passenger_fare = Column(Float)
+    car_fare = Column(Float)
+    truck_fare = Column(Float)
+    
+    first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
+    second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
+    first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
+    second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
+    
+    ferry_results = relationship('Ferry_Result', backref = 'route_result')
+    
+    turn_result_id = Column(Integer, ForeignKey('turn_results.id'))
     
 class Turn_Result(Base):
     __tablename__ = 'turn_results'
@@ -190,12 +233,9 @@ class Turn_Result(Base):
         
     id = Column(Integer, primary_key = True)
     week_number = Column(Integer, nullable = False)
-    total_passengers = Column(Integer)
-    fuel_used = Column(Integer)
     fuel_cost = Column(Float)
-    passenger_revenue = Column(Float)
-    car_revenue = Column(Float)
-    truck_revenue = Column(Float)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
+    
+    route_results = relationship('Route_Result', backref = 'turn_result')
     
 Base.metadata.create_all(engine)
