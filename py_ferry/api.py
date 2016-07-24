@@ -143,16 +143,16 @@ def games_endturn(game_id):
             passenger_fare = route.passenger_fare,
             car_fare = route.car_fare,
             truck_fare = route.truck_fare,
+            ferry_results = ferry_results
         )
         session.add(route_result)
         routes_results.append(route_result)
     
     turn_result = database.Turn_Result(
         game = game,
-        week_number = game.current_week,
-        # total_passengers = weekly_results['passengers'],
-        # total_cars = weekly_results['cars'],
-        # total_trucks = weekly_results['trucks'],
+        week = game.current_week,
+        year = game.current_year,
+        route_results = routes_results,
     )
     
     session.add(turn_result)
@@ -178,7 +178,9 @@ def games_get_turn(game_id, week_number):
         return Response(data, 403, mimetype = 'application/json')
 
     # TODO we need to refactor the following query if we drop using the explicit game record check
-    turn_results = session.query(database.Turn_Result).filter(game == game, week_number == week_number)[0]
+    turn_result = session.query(database.Turn_Result).filter(game == game, week_number == week_number)[0]
+    
+    route_results = session.query(database.Route_Result).filter(turn_result == turn_result)
 
-    data = json.dumps(turn_results.as_dictionary())
+    data = json.dumps(turn_result.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
