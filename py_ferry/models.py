@@ -163,10 +163,9 @@ class Schedule(object):
         }
         
     def route_interval(self, route):
-        print(route.ferries[0])
         return route.route_distance() / route.ferries[0].ferry_class.speed + route.ferries[0].ferry_class.turnover_time
         
-    # consider refactoring first_run and last_run into one loop through the shift
+    # TODO consider refactoring first_run and last_run into one loop through the shift
     def first_run(self, shift_mapping):
         for time in range(0, 24):
             if self.full_staffing[shift_mapping][time] == True:
@@ -287,23 +286,22 @@ class Financial_Calc(object):
         pass
     
     def calc_weekly_results_for_route(self, route, week, year):
-        sailings_results = Sailings().weekly_crossings(route, week, year)
-        fuel_used = route.ferries[0].ferry_class.burn_rate * sailings_results['total_hours']
-        fuel_cost = Fuel().cost_per_gallon() * fuel_used
-        passenger_revenue = sailings_results['total_passengers'] * route.passenger_fare
-        car_revenue = sailings_results['total_cars'] * route.car_fare
-        truck_revenue = sailings_results['total_trucks'] * route.truck_fare
-        
-        weekly_results = {
-            'passengers': sailings_results['total_passengers'],
-            'cars': sailings_results['total_cars'],
-            'trucks': sailings_results['total_trucks'],
-            'fuel_used': fuel_used,
-            'fuel_cost': fuel_cost,
-            'passenger_revenue': passenger_revenue,
-            'car_revenue': car_revenue,
-            'truck_revenue': truck_revenue,
-        }
+        weekly_results = []
+        ferry_result = {}
+        for ferry in route.ferries:
+            sailings_results = Sailings().weekly_crossings(route, week, year)
+            fuel_used = ferry.ferry_class.burn_rate * sailings_results['total_hours']
+            fuel_cost = Fuel().cost_per_gallon() * fuel_used
+            
+            ferry_results = {
+                'passengers': sailings_results['total_passengers'],
+                'cars': sailings_results['total_cars'],
+                'trucks': sailings_results['total_trucks'],
+                'fuel_used': fuel_used,
+                'name': ferry.name,
+                'ferry_class': ferry.ferry_class,
+            }
+            weekly_results.append(ferry_results)
         return weekly_results
     
     
