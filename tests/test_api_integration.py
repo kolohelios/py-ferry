@@ -331,5 +331,12 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, 'application/json')
         
+        data = json.loads(response.data.decode('ascii'))
+        print(data)
+        
+        self.assertEqual(data['week'], 1)
+        self.assertEqual(data['year'], 2000)
+        self.assertEqual(data['route_results'][0]['id'], 1)
+        
 if __name__ == '__main__':
     unittest.main()

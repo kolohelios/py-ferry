@@ -182,9 +182,15 @@ class Route(Base):
 class Ferry_Result(Base):
     __tablename__ = 'ferry_results'
     
-    def as_dictonary(self):
+    def as_dictionary(self):
         return {
-            "id": self.id
+            "id": self.id,
+            "name": self.name,
+            "total_passengers": self.total_passengers,
+            "total_cars": self.total_cars,
+            "total_trucks": self.total_trucks,
+            "fuel_used": self.fuel_used,
+            "sailings": self.sailings,
         }
     
     id = Column(Integer, primary_key = True)
@@ -202,9 +208,12 @@ class Ferry_Result(Base):
 class Route_Result(Base):
     __tablename__ = 'route_results'
 
-    def as_dictonary(self):
+    def as_dictionary(self):
         return {
-            "id": self.id
+            "id": self.id,
+            "first_terminal": self.first_terminal.as_dictionary(),
+            "second_terminal": self.second_terminal.as_dictionary(),
+            "ferry_results": [ferry_result.as_dictionary() for ferry_result in self.ferry_results] 
         }
         
     id = Column(Integer, primary_key = True)
@@ -217,7 +226,7 @@ class Route_Result(Base):
     first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
     second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
     
-    ferry_results = relationship('Ferry_Result', backref = 'route_result')
+    ferry_results = relationship('Ferry_Result', backref = 'route_results')
     
     turn_result_id = Column(Integer, ForeignKey('turn_results.id'))
     
@@ -228,11 +237,14 @@ class Turn_Result(Base):
         return {
             "id": self.id,
             "game_id": self.game_id,
-            "week_number": self.week_number,
+            "week": self.week,
+            "year": self.year,
+            "route_results": [route_result.as_dictionary() for route_result in self.route_results]
         }
         
     id = Column(Integer, primary_key = True)
-    week_number = Column(Integer, nullable = False)
+    week = Column(Integer, nullable = False)
+    year = Column(Integer, nullable = False)
     fuel_cost = Column(Float)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     
