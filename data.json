@@ -56,7 +56,7 @@
                 "name": "Evergreen State",
                 "passengers": 854,
                 "cars": 87,
-                "tall_spaces": 30,
+                "trucks": 30,
                 "speed": 13,
                 "burn_rate": 350,
                 "cost": 80000000,

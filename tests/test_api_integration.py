@@ -267,11 +267,14 @@ class TestAPI(unittest.TestCase):
         game = database.Game(player = self.user)
         
         # create terminals
-        seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002)
-        bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171)
+        seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002, passenger_pool = 13000, car_pool = 2000, truck_pool = 300)
+        bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171, passenger_pool = 13000, car_pool = 2000, truck_pool = 300)
         
         # create route
-        route = database.Route(game = game, first_terminal = seattle, second_terminal = bainbridge_island)
+        route = database.Route(
+            game = game, first_terminal = seattle, second_terminal = bainbridge_island,
+            passenger_fare = 8, car_fare = 18, truck_fare = 50
+        )
         
         # TODO ferry_class_props should be moved outside of this function as it duplicates an object for another test
         # create a ferry class
@@ -281,7 +284,8 @@ class TestAPI(unittest.TestCase):
             'cars': 202,
             'trucks': 60,
             'speed': 21,
-            'burn_rate': 350
+            'burn_rate': 350,
+            'turnover_time': 0.2,
         }
         ferry_class_A = database.Ferry_Class(
             name = ferry_class_props['name'],
@@ -290,6 +294,7 @@ class TestAPI(unittest.TestCase):
             trucks = ferry_class_props['trucks'],
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
+            turnover_time = ferry_class_props['turnover_time'],
         )
         
         ferry = database.Ferry(game = game, ferry_class = ferry_class_A, route = route)
