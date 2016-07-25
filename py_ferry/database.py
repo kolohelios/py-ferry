@@ -23,14 +23,29 @@ def unix_timestamp(date_time):
         return None
     return int(date_time.strftime("%s"))
 
-class User(Base, UserMixin):
-    __tablename__ = 'users'
-    
+class Public:
+    private = ()
+
     def as_dictionary(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-        }
+        dic = {}
+        for col in self.__table__.columns:
+            name = col.name
+            if name in self.private: continue
+            dic[name] = getattr(self, name)
+        return dic
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__,
+            ", ".join(
+                "%s=%r" % (col.name, getattr(self, col.name))
+                for col in self.__table__.columns
+                if col.name not in self.private
+            )
+        )
+
+class User(Base, UserMixin, Public):
+    __tablename__ = 'users'
+    private = ('email', 'password', 'created_date')
     
     id = Column(Integer, primary_key = True)
     name = Column(String(64), unique = True)
@@ -40,25 +55,14 @@ class User(Base, UserMixin):
 
     games = relationship('Game', backref = 'player')
 
-class Ferry_Class(Base):
+class Ferry_Class(Base, Public):
     '''
     The ferry class model contains the ferry classes that form the basis for
     ferries that users buy and sell.
     '''
     __tablename__ = 'ferry_classes'
     
-    def as_dictionary(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "passengers": self.passengers,
-            "cars": self.cars,
-            "trucks": self.trucks,
-            "speed": self.speed,
-            "burn_rate": self.burn_rate,
-            "turnover_time": self.turnover_time,
-        }
-    
+
     id = Column(Integer, primary_key = True)
     name = Column(String(64), unique = True)
     passengers = Column(Integer)
