@@ -122,18 +122,17 @@ def games_endturn(game_id):
     routes_results = []
     # TODO there's got to be a better way to map an existing record to a new record
     for route in routes:
-        ferry_results = []
-        weekly_results = models.Financial_Calc().calc_weekly_results_for_route(
+        weekly_results = models.Sailings().weekly_crossings(
             route, game.current_week, game.current_year
         )
+        ferry_results = []
         for weekly_result in weekly_results:
             ferry_result = database.Ferry_Result(
-                fuel_used = weekly_result['fuel_used'],
-                total_passengers = weekly_result['passengers'],
-                total_cars = weekly_result['cars'],
-                total_trucks = weekly_result['trucks'],
-                ferry_class = weekly_result['ferry_class'],
-                name = weekly_result['name'],
+                fuel_used = weekly_result['results']['fuel_used'],
+                total_passengers = weekly_result['results']['total_passengers'],
+                total_cars = weekly_result['results']['total_cars'],
+                total_trucks = weekly_result['results']['total_trucks'],
+                ferry = weekly_result['ferry']
             )
             ferry_results.append(ferry_result)
             session.add(ferry_result)

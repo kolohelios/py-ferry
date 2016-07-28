@@ -162,8 +162,8 @@ class Schedule(object):
             'Sunday': 'weekend'
         }
         
-    def route_interval(self, route):
-        return route.route_distance() / route.ferries[0].ferry_class.speed + route.ferries[0].ferry_class.turnover_time
+    def route_interval(self, route, ferry):
+        return route.route_distance() / ferry.ferry_class.speed + ferry.ferry_class.turnover_time
         
     # TODO consider refactoring first_run and last_run into one loop through the shift
     def first_run(self, shift_mapping):
@@ -184,12 +184,12 @@ class Schedule(object):
                 hours += 1
         return hours
     
-    def build_schedule(self, route, day):
+    def build_schedule(self, route, ferry, day):
         schedule = []
         shift_mapping = self.day_mapping[day]
         first_shift_hour = self.first_run(shift_mapping)
         last_shift_hour = self.last_run(shift_mapping)
-        run_interval = self.route_interval(route)
+        run_interval = self.route_interval(route, ferry)
         
         # TODO change logic so that ferries always start at the first terminal and end at the first terminal (maybe)
         next_crossing = { 'time': first_shift_hour, 'departs': route.first_terminal, 'arrives': route.second_terminal }
@@ -208,100 +208,93 @@ class Sailings(object):
         pass
     
     def daily_crossings(self, route, day, week, year):
-        schedule = Schedule().build_schedule(route, day)
+        accumulations = []
+        for ferry in route.ferries:
+            schedule = Schedule().build_schedule(route, ferry, day)
+            accumulations.append({
+                'ferry': ferry,
+                'schedule': schedule,
+                'results': {
+                    'total_passengers': 0,
+                    'total_cars': 0,
+                    'total_trucks': 0,
+                    'total_sailings': len(schedule),
+                    'total_hours': Schedule().hours_of_operations(day),
+                    }
+                })
         # TODO all these declarations and the repition of the queue code smells
-        first_terminal_passenger_queue = 0
-        second_terminal_passenger_queue = 0
-        first_terminal_car_queue = 0
-        second_terminal_car_queue = 0
-        first_terminal_truck_queue = 0
-        second_terminal_truck_queue = 0
-        total_passengers = 0
-        total_cars = 0
-        total_trucks = 0
-        for time in range(0, 23):
-            first_terminal_passenger_queue += Passenger().route_passenger_demand(route.first_terminal.passenger_pool, time, day, week, year)
-            second_terminal_passenger_queue += Passenger().route_passenger_demand(route.second_terminal.passenger_pool, time, day, week, year)
-            first_terminal_car_queue += Passenger().route_passenger_demand(route.first_terminal.car_pool, time, day, week, year)
-            second_terminal_car_queue += Passenger().route_passenger_demand(route.second_terminal.car_pool, time, day, week, year)
-            first_terminal_truck_queue += Passenger().route_passenger_demand(route.first_terminal.truck_pool, time, day, week, year)
-            second_terminal_truck_queue += Passenger().route_passenger_demand(route.second_terminal.truck_pool, time, day, week, year)
-            for sailing in schedule:
-                # TODO the if block below can probably be changed to parametric expressions that use route[terminal]
-                if int(sailing['time']) == time:
-                    if sailing['departs'] == route.first_terminal:
-                        passengers = min(route.ferries[0].ferry_class.passengers, first_terminal_passenger_queue)
-                        cars = min(route.ferries[0].ferry_class.cars, first_terminal_car_queue)
-                        trucks = min(route.ferries[0].ferry_class.trucks, first_terminal_truck_queue)
-                        first_terminal_passenger_queue -= passengers
-                        first_terminal_car_queue -= cars
-                        first_terminal_truck_queue -= trucks
-                        total_passengers += passengers
-                        total_cars += cars
-                        total_trucks += trucks
-                    else:
-                        passengers = min(route.ferries[0].ferry_class.passengers, second_terminal_passenger_queue)
-                        cars = min(route.ferries[0].ferry_class.cars, second_terminal_car_queue)
-                        trucks = min(route.ferries[0].ferry_class.trucks, second_terminal_truck_queue)
-                        second_terminal_passenger_queue -= passengers
-                        second_terminal_car_queue -= cars
-                        second_terminal_truck_queue -= trucks
-                        total_passengers += passengers
-                        total_cars += cars
-                        total_trucks += trucks
-        daily_results = {
-            'total_passengers': total_passengers,
-            'total_cars': total_cars,
-            'total_trucks': total_trucks,
-            'total_sailings': len(schedule),
-            'total_hours': Schedule().hours_of_operations(day),
+        first_terminal_queue = {
+            'passengers': 0,
+            'cars': 0,
+            'trucks': 0,
         }
-        return daily_results
+        second_terminal_queue = {
+            'passengers': 0,
+            'cars': 0,
+            'trucks': 0,
+        }
+        for time in range(0, 23):
+            # add passengers, cars, and trucks to the queues
+            first_terminal_queue['passengers'] += Passenger().route_passenger_demand(route.first_terminal.passenger_pool, time, day, week, year)
+            second_terminal_queue['passengers'] += Passenger().route_passenger_demand(route.second_terminal.passenger_pool, time, day, week, year)
+            first_terminal_queue['cars'] += Passenger().route_passenger_demand(route.first_terminal.car_pool, time, day, week, year)
+            second_terminal_queue['cars'] += Passenger().route_passenger_demand(route.second_terminal.car_pool, time, day, week, year)
+            first_terminal_queue['trucks'] += Passenger().route_passenger_demand(route.first_terminal.truck_pool, time, day, week, year)
+            second_terminal_queue['trucks'] += Passenger().route_passenger_demand(route.second_terminal.truck_pool, time, day, week, year)
+            for accumulation in accumulations:
+                for sailing in accumulation['schedule']:
+                    # TODO the if block below can probably be changed to parametric expressions that use route[terminal]
+                    if int(sailing['time']) == time:
+                        if sailing['departs'] == route.first_terminal:
+                            passengers = min(accumulation['ferry'].ferry_class.passengers, first_terminal_queue['passengers'])
+                            cars = min(accumulation['ferry'].ferry_class.cars, first_terminal_queue['cars'])
+                            trucks = min(accumulation['ferry'].ferry_class.trucks, first_terminal_queue['trucks'])
+                            first_terminal_queue['passengers'] -= passengers
+                            first_terminal_queue['cars'] -= cars
+                            first_terminal_queue['trucks'] -= trucks
+                            accumulation['results']['total_passengers'] += passengers
+                            accumulation['results']['total_cars'] += cars
+                            accumulation['results']['total_trucks'] += trucks
+                        else:
+                            passengers = min(accumulation['ferry'].ferry_class.passengers, second_terminal_queue['passengers'])
+                            cars = min(accumulation['ferry'].ferry_class.cars, second_terminal_queue['cars'])
+                            trucks = min(accumulation['ferry'].ferry_class.trucks, second_terminal_queue['trucks'])
+                            second_terminal_queue['passengers'] -= passengers
+                            second_terminal_queue['cars'] -= cars
+                            second_terminal_queue['trucks'] -= trucks
+                            accumulation['results']['total_passengers'] += passengers
+                            accumulation['results']['total_cars'] += cars
+                            accumulation['results']['total_trucks'] += trucks
+        return accumulations
    
     def weekly_crossings(self, route, week, year):
+        accumulations = []
+        for ferry in route.ferries:
+            accumulations.append({
+                'ferry': ferry,
+                'results': {
+                    'total_passengers': 0,
+                    'total_cars': 0,
+                    'total_trucks': 0,
+                    'total_sailings': 0,
+                    'total_hours': 0,
+                    'fuel_used': 0,
+                    }
+                })
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        total_passengers = 0
-        total_cars = 0
-        total_trucks = 0
-        total_sailings = 0
-        total_hours = 0
+        
         for day in days:
             daily_crossings = self.daily_crossings(route, day, week, year)
-            total_passengers += daily_crossings['total_passengers']
-            total_cars += daily_crossings['total_cars']
-            total_trucks += daily_crossings['total_trucks']
-            total_sailings += daily_crossings['total_sailings']
-            total_hours += daily_crossings['total_hours']
-        weekly_results = {
-            'total_passengers': total_passengers,
-            'total_cars': total_cars,
-            'total_trucks': total_trucks,
-            'total_sailings': total_sailings,
-            'total_hours': total_hours,
-        }
-        return weekly_results
+            for accumulation in accumulations:
+                for daily_crossing in daily_crossings:
+                    if daily_crossing['ferry'] == accumulation['ferry']:
+                        accumulation['results']['total_passengers'] += daily_crossing['results']['total_passengers']
+                        accumulation['results']['total_cars'] += daily_crossing['results']['total_cars']
+                        accumulation['results']['total_trucks'] += daily_crossing['results']['total_trucks']
+                        accumulation['results']['total_sailings'] += daily_crossing['results']['total_sailings']
+                        accumulation['results']['total_hours'] += daily_crossing['results']['total_hours']
+                        accumulation['results']['fuel_used'] += accumulation['ferry'].ferry_class.burn_rate * daily_crossing['results']['total_hours']
+        return accumulations
     
-class Financial_Calc(object):
-    def __init__(self):
-        pass
-    
-    def calc_weekly_results_for_route(self, route, week, year):
-        weekly_results = []
-        ferry_result = {}
-        for ferry in route.ferries:
-            sailings_results = Sailings().weekly_crossings(route, week, year)
-            fuel_used = ferry.ferry_class.burn_rate * sailings_results['total_hours']
-            fuel_cost = Fuel().cost_per_gallon() * fuel_used
-            
-            ferry_results = {
-                'passengers': sailings_results['total_passengers'],
-                'cars': sailings_results['total_cars'],
-                'trucks': sailings_results['total_trucks'],
-                'fuel_used': fuel_used,
-                'name': ferry.name,
-                'ferry_class': ferry.ferry_class,
-            }
-            weekly_results.append(ferry_results)
-        return weekly_results
     
     

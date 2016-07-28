@@ -297,7 +297,10 @@ class TestAPI(unittest.TestCase):
             turnover_time = ferry_class_props['turnover_time'],
         )
         
-        ferry = database.Ferry(game = game, ferry_class = ferry_class_A, route = route)
+        ferry = database.Ferry(
+            game = game, ferry_class = ferry_class_A, route = route, 
+            name = 'M/V Wenatchee'
+        )
         
         session.add_all([game, seattle, bainbridge_island, route, ferry_class_A, ferry])
         session.commit()
@@ -337,6 +340,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data['week'], 1)
         self.assertEqual(data['year'], 2000)
         self.assertEqual(data['route_results'][0]['id'], 1)
+        self.assertEqual(data['route_results'][0]['ferry_results'][0]['ferry']['name'], 'M/V Wenatchee')
         
 if __name__ == '__main__':
     unittest.main()
