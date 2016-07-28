@@ -76,7 +76,6 @@ class Ferry_Class(Base, Public):
     turnover_time = Column(Integer)
     
     ferry = relationship('Ferry', backref = 'ferry_class')
-    ferry_result = relationship('Ferry_Result', backref = 'ferry_class')
 
 class Ferry(Base):
     __tablename__ = 'ferries'
@@ -99,6 +98,7 @@ class Ferry(Base):
     launched = Column(DateTime)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
+    ferry_result = relationship('Ferry_Result', backref = 'ferry')
     route_id = Column(Integer, ForeignKey('routes.id'))
     
 class Game(Base):
@@ -188,8 +188,7 @@ class Ferry_Result(Base):
     
     def as_dictionary(self):
         return {
-            "id": self.id,
-            "name": self.name,
+            "ferry": self.ferry.as_dictionary(),
             "total_passengers": self.total_passengers,
             "total_cars": self.total_cars,
             "total_trucks": self.total_trucks,
@@ -205,7 +204,7 @@ class Ferry_Result(Base):
     fuel_used = Column(Float)
     sailings = Column(Integer)
     
-    ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
+    ferry_id = Column(Integer, ForeignKey('ferries.id'), nullable = False)
     
     route_result_id = Column(Integer, ForeignKey('route_results.id'))
 
