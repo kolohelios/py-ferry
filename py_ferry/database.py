@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from py_ferry import app
 
-engine = create_engine(app.config["DATABASE_URI"])
+engine = create_engine(app.config['DATABASE_URI'])
 Base = declarative_base()
 Session = sessionmaker(bind = engine)
 session = Session()
@@ -21,7 +21,7 @@ session = Session()
 def unix_timestamp(date_time):
     if not date_time:
         return None
-    return int(date_time.strftime("%s"))
+    return int(date_time.strftime('%s'))
 
 class Public:
     private = ()

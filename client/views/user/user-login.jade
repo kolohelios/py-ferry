@@ -1,0 +1,8 @@
+#user.container
+    .form-group
+        label(for="name") Player Name
+        input.form-control(type="text" ng-model="player.username" id="name")
+    .form-group
+        label(for="password") Password
+        input.form-control(type="password" ng-model="player.password" id="password")
+    a.btn.btn-primary(ng-click="login()") Login

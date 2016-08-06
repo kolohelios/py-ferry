@@ -13,9 +13,6 @@ from py_ferry import database
 from py_ferry import models
 from .database import session
 
-# def current_identity_authorized(record_type, id):
-#     return True
-
 def authenticate(username, password):
     user = session.query(database.User).filter_by(name = username).first()
     if user and check_password_hash(user.password, password):
@@ -48,7 +45,7 @@ def register():
         data = json.dumps({ 'status': 'Error', 'data': None, 'message': message })
         return Response(data, 409, mimetype = 'application/json')
 
-@app.route('/api/token_test')
+@app.route('/api/user')
 @jwt_required()
 def get_identity_with_token():
     data = json.dumps(current_identity.as_dictionary())
@@ -92,6 +89,20 @@ def ferries_get(game_id):
     # ferry = ferry.order_by(models.Ferry_Class.cost)
 
     data = json.dumps([ferry.as_dictionary() for ferry in ferries])
+    return Response(data, 200, mimetype = 'application/json')
+    
+@app.route('/api/games', methods = ['POST'])
+@jwt_required()
+@decorators.accept('application/json')
+def games_new():
+    ''' create a new player game '''
+    
+    game = database.Game(player = current_identity)
+    
+    session.add(game)
+    session.commit()
+    
+    data = json.dumps(game.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games', methods = ['GET'])
