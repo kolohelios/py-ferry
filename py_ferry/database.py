@@ -4,7 +4,7 @@ from flask import url_for
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, Sequence, ForeignKey
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin
+# from flask_login import UserMixin
 from geopy.distance import vincenty
 
 from sqlalchemy import create_engine
@@ -31,7 +31,10 @@ class Public:
         for col in self.__table__.columns:
             name = col.name
             if name in self.private: continue
-            dic[name] = getattr(self, name)
+            if type(getattr(self, name)) == datetime:
+                dic[name] = getattr(self, name).timestamp()
+            else:
+                dic[name] = getattr(self, name)
         return dic
 
     def __repr__(self):
@@ -43,14 +46,15 @@ class Public:
             )
         )
 
-class User(Base, UserMixin, Public):
+class User(Base, Public):
+    # TODO add a verify password method here and refactor where it is being done a point of use
     __tablename__ = 'users'
     private = ('email', 'password', 'created_date')
     
     id = Column(Integer, primary_key = True)
-    name = Column(String(64), unique = True)
-    email = Column(String(128), unique = True)
-    password = Column(String(128))
+    name = Column(String(64), unique = True, nullable = False)
+    email = Column(String(128), unique = True, nullable = False)
+    password = Column(String(128), nullable = False)
     created_date = Column(DateTime, default = datetime.now)
 
     games = relationship('Game', backref = 'player')

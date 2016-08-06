@@ -1,9 +1,10 @@
 import os.path
 import json
 
+# TODO consider replacing the use of the json library with jsonify
 from flask import request, Response, url_for, send_from_directory
-from flask_login import login_user, login_required, current_user, logout_user
-# from werkzeug.utils import secure_filename
+from flask_jwt import JWT, jwt_required, current_identity
+from werkzeug.security import check_password_hash
 from jsonschema import validate, ValidationError
 
 from . import decorators
@@ -12,8 +13,46 @@ from py_ferry import database
 from py_ferry import models
 from .database import session
 
-# def current_user_authorized(record_type, id):
+# def current_identity_authorized(record_type, id):
 #     return True
+
+def authenticate(username, password):
+    user = session.query(database.User).filter_by(name = username).first()
+    if user and check_password_hash(user.password, password):
+        return user
+
+def identity(payload):
+    user_id = payload['identity']
+    return session.query(database.User).get(user_id)
+
+jwt = JWT(app, authenticate, identity)
+
+@app.route('/api/register', methods = ['POST'])
+def register():
+    json_data = request.json
+    user = database.User(
+        email = json_data['email'],
+        password = json_data['password'],
+        name = json_data['name']
+    )
+    # TODO should probably invert this logic so we fail and bail and also DRY out the repetitive last two lines of the try and except blocks
+    # TODO need to differntiate between registration failures because the email address already exists and failures because the name already exists
+    try:
+        session.add(user)
+        session.commit()
+        message = None
+        data = json.dumps({ 'status': 'Success', 'data': None, 'message': message })
+        return Response(data, 201, mimetype = 'application/json')
+    except:
+        message = 'This user is already registered.'
+        data = json.dumps({ 'status': 'Error', 'data': None, 'message': message })
+        return Response(data, 409, mimetype = 'application/json')
+
+@app.route('/api/token_test')
+@jwt_required()
+def get_identity_with_token():
+    data = json.dumps(current_identity.as_dictionary())
+    return Response(data, 200, mimetype = 'application/json')
 
 @app.route('/api/ferry_classes', methods = ['GET'])
 @decorators.accept('application/json')
@@ -38,14 +77,14 @@ def terminals_get():
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>/ferries', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def ferries_get(game_id):
     ''' get player ferries based on game id '''
 
     # make sure the game ID belongs to the current user
     game = session.query(database.Game).get(game_id)
-    if not game.player == current_user:
+    if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
     
@@ -56,14 +95,14 @@ def ferries_get(game_id):
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def games_get():
     ''' get player games '''
 
     # make sure the game ID belongs to the current user
-    games = session.query(database.Game).filter(database.Game.player == current_user)
-    # if not game.player == current_user:
+    games = session.query(database.Game).filter(database.Game.player == current_identity)
+    # if not game.player == current_identity:
     #     data = {'message': 'The game ID for the request does not belong to the current user.'}
     #     return Response(data, 403, mimetype = 'application/json')
     
@@ -74,14 +113,14 @@ def games_get():
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def games_get_one(game_id):
     ''' get player game '''
 
     # make sure the game ID belongs to the current user
     game = session.query(database.Game).get(game_id)
-    if not game.player == current_user:
+    if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
 
@@ -89,14 +128,14 @@ def games_get_one(game_id):
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>/routes', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def routes_get(game_id):
     ''' get routes for a player's game '''
 
     # make sure the game ID belongs to the current user
     game = session.query(database.Game).get(game_id)
-    if not game.player == current_user:
+    if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
     
@@ -106,14 +145,14 @@ def routes_get(game_id):
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>/endturn', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def games_endturn(game_id):
     ''' end a player's turn '''
 
     # make sure the game ID belongs to the current user
     game = session.query(database.Game).get(game_id)
-    if not game.player == current_user:
+    if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
     
@@ -164,7 +203,7 @@ def games_endturn(game_id):
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>/turn-results/<int:week_number>', methods = ['GET'])
-@login_required
+@jwt_required()
 @decorators.accept('application/json')
 def games_get_turn(game_id, week_number):
     ''' get turn results given a game ID and week number '''
@@ -172,7 +211,7 @@ def games_get_turn(game_id, week_number):
     # make sure the game ID belongs to the current user
     # TODO we probably don't have to get the game explicitly, we can probable jsut access the player through the game property
     game = session.query(database.Game).get(game_id)
-    if not game.player == current_user:
+    if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
 

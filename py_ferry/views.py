@@ -1,7 +1,14 @@
-from flask import render_template
+import os
+from flask import send_from_directory
 
 from py_ferry import app
 
-@app.route("/")
-def index():
-    return app.send_static_file("index.html")
+root_dir = os.path.relpath('..')
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(os.path.join(root_dir, 'public'), 'index.html')
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(os.path.join(root_dir, 'public'), filename)

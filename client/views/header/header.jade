@@ -1,0 +1,30 @@
+nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
+  .container
+    .navbar-header
+      .logo-container
+        a(ui-sref="home" href="" ng-click="isCollapsed = true")
+          .icon-logo-placeholder
+      button.navbar-toggle.collapsed(type="button" ng-init="isCollapsed = true" ng-click="isCollapsed = !isCollapsed" aria-expanded="false")
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(ui-sref='home' href="") py-ferry
+    .collapse.navbar-collapse(uib-collapse="isCollapsed" collapse="isCollapsed")
+      ul.main-menu.nav.navbar-nav.navbar-left
+        li.dropdown
+          a(href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Games
+            i.fa.fa-chevron-down
+          ul.dropdown-menu
+            li
+              a(ui-sref="/" href="" ng-click="collapse()") Games List
+            li(ng-repeat="game in games")
+              a(ui-sref="/" href="" ng-click="collapse()") {{game.name}}
+        li
+          a(ui-sref="/" href="" ng-click="isCollapsed = true") Next Turn
+      ul.main-menu.nav.navbar-nav.navbar-right
+        li
+          a(ui-sref="contactUs" href="" ng-click="isCollapsed = true")
+            .glyphicon.glyphicon-envelope
+            span &nbsp;Contact Us
+          

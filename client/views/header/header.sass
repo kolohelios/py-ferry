@@ -1,0 +1,40 @@
+@import master
+
+#header
+  background-color: RGBA(255, 255, 255, 1.00)
+  .navbar-header
+    height: 50px
+    margin-left: -20px
+    padding-left: 0
+    background-size: contain
+  .navbar-brand
+    @media screen and (min-width: 789px)
+      display: none
+    font-weight: 600
+    color: $primaryForegroundColor
+    padding-top: 10px
+    padding-left: 50px
+    text-transform: uppercase
+  .main-menu
+    ul.dropdown-menu
+      background-color: $primaryBackgroundColor
+    li
+      height: auto
+      a
+        color: $primaryForegroundColor
+        font-weight: 400
+    i
+      margin-left: 6px
+      font-size: 75%
+    .dropdown-menu > li > a
+      line-height: 2
+  .logo-container
+    margin: 12px 50px 0 25px
+    background-position: 5px center
+  div.icon-microsoft-new-logo
+    @media screen and (max-width: 788px)
+      display: none
+  .icon-email
+    margin-top: -3px
+  .navbar-right
+    padding-right: 15px

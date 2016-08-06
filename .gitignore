@@ -1,1 +1,4 @@
 commit-notes.txt
+public/
+temp/
+node_modules/

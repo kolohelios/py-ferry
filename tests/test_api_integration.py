@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 
 from werkzeug.security import generate_password_hash
+from flask_jwt import JWT
 
 try: from urllib.parse import urlparse
 except ImportError: from urlparse import urlparse
@@ -42,10 +43,30 @@ class TestAPI(unittest.TestCase):
         # Remove the tables and their data from the database
         Base.metadata.drop_all(engine)
         
-    def simulate_login(self):
-        with self.client.session_transaction() as http_session:
-            http_session['user_id'] = str(self.user.id)
-            http_session['_fresh'] = True
+    def get_jwt(self, username, password):
+        data = {
+            "username": username,
+            "password": password
+        }
+            
+        response = self.client.post('/auth',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        token = data['access_token']
+        
+        return token
+    
+    # def simulate_login(self):
+    #     with self.client.session_transaction() as http_session:
+    #         http_session['user_id'] = str(self.user.id)
+    #         http_session['_fresh'] = True
         
     def test_get_with_unsupported_accept_header(self):
         ''' test getting all ferries with an unsupported accept header '''
@@ -60,6 +81,133 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data['message'],
             'Request must accept application/json data')
             
+    def test_register(self):
+        ''' test the user registration endpoint of the API '''
+        data = {
+            "email": "joe@joeshome.com",
+            "password": "notsecret",
+            "name": "BestBureaucrat"
+        }
+        
+        response = self.client.post('/api/register',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['status'], 'Success')
+        self.assertEqual(data['data'], None)
+        self.assertEqual(data['message'], None)
+        
+    def test_register_already_exists_email(self):
+        ''' test the user registration endpoint of the API where the user
+            already exists '''
+        user = database.User(
+            email = 'joe@joeshome.com', 
+            password = 'notsecret',
+            name = 'BestBureaucrat'
+        )
+        session.add(user)
+        session.commit()
+        
+        data = {
+            "email": "joe@joeshome.com",
+            "password": "notsecret",
+            "name": "Second Account"
+        }
+        
+        response = self.client.post('/api/register',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['status'], 'Error')
+        self.assertEqual(data['data'], None)
+        self.assertEqual(data['message'], 'This user is already registered.')
+        
+    def test_register_already_exists_name(self):
+        ''' test the user registration endpoint of the API where the user
+            already exists '''
+        user = database.User(
+            email = 'joe@joeshome.com', 
+            password = 'notsecret',
+            name = 'BestBureaucrat'
+        )
+        session.add(user)
+        session.commit()
+        
+        data = {
+            "email": "bob@msbob.com",
+            "password": "notsecret",
+            "name": "BestBureaucrat"
+        }
+        
+        response = self.client.post('/api/register',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['status'], 'Error')
+        self.assertEqual(data['data'], None)
+        self.assertEqual(data['message'], 'This user is already registered.')
+        
+    def test_login(self):
+        ''' test a successful login '''
+        user = database.User(
+            email = 'joe@joeshome.com', 
+            password = generate_password_hash('notsecret'),
+            name = 'BestBureaucrat'
+        )
+        session.add(user)
+        session.commit()
+        
+        data = {
+            "username": "BestBureaucrat",
+            "password": "notsecret"
+        }
+        
+        response = self.client.post('/auth',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [('Accept', 'application/json')]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        token = data['access_token']
+        
+        response = self.client.get('/api/token_test',
+            data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['id'], 2)
+        self.assertEqual(data['name'], 'BestBureaucrat')
+        
     def test_get_empty_ferry_classes(self):
         ''' test getting empty ferry class list '''
         response = self.client.get('/api/ferry_classes',
@@ -153,14 +301,14 @@ class TestAPI(unittest.TestCase):
     
     def test_get_ferries(self):
         ''' get all ferries associated with a player's game '''
-        self.simulate_login()
         
-        # Bob and George are red herrings for testing
-        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com')
-        george = database.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com')
+        # George is a red herring for testing
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        george = database.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com', password = generate_password_hash(pw))
         ferry_class_props = { 'name': 'Jumbo Mark II' }
         ferry_class = database.Ferry_Class(name = ferry_class_props['name'])
-        gameA = database.Game(player = self.user)
+        gameA = database.Game(player = bob)
         gameB = database.Game(player = george)
 
         ferryA = database.Ferry(name = 'Puget Rider', ferry_class = ferry_class, game = gameA)
@@ -169,8 +317,13 @@ class TestAPI(unittest.TestCase):
         session.add_all([bob, george, ferry_class, gameA, gameB, ferryA, ferryB])
         session.commit()
         
+        token = self.get_jwt(bob.name, pw)
+        
         response = self.client.get('/api/games/' + str(gameA.id) + '/ferries',
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -184,16 +337,22 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(ferryA['name'], 'Puget Rider')
         
     def test_get_new_game(self):
-        ''' get a new game for the current user '''
-        self.simulate_login()
+        ''' get a new game for a user '''
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
-        game = database.Game(player = self.user)
+        game = database.Game(player = bob)
         
-        session.add_all([game])
+        session.add_all([bob, game])
         session.commit()
         
+        token = self.get_jwt(bob.name, pw)
+        
         response = self.client.get('/api/games',
-            headers = [('Accept', 'application/json')]
+             headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -203,7 +362,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(len(data), 1)
         
         game = data[0]
-        self.assertEqual(game['player']['id'], self.user.id)
+        self.assertEqual(game['player']['id'], bob.id)
         self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         self.assertEqual(game['cash_available'], 0)
         self.assertEqual(game['current_week'], 1)
@@ -211,15 +370,22 @@ class TestAPI(unittest.TestCase):
         
     def test_get_empty_routes(self):
         ''' try to get routes for a game where none exist '''
-        self.simulate_login()
         
-        game = database.Game(player = self.user)
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
-        session.add_all([game])
+        game = database.Game(player = bob)
+        
+        session.add_all([bob, game])
         session.commit()
         
+        token = self.get_jwt(bob.name, pw)
+        
         response = self.client.get('/api/games/' + str(game.id) + '/routes',
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -230,20 +396,27 @@ class TestAPI(unittest.TestCase):
         
     def test_get_routes(self):
         ''' get a new game for the current user '''
-        self.simulate_login()
+        # self.simulate_login()
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
-        game = database.Game(player = self.user)
+        game = database.Game(player = bob)
         
         seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002)
         bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171)
         
         route = database.Route(game = game, first_terminal = seattle, second_terminal = bainbridge_island)
         
-        session.add_all([game, seattle, bainbridge_island])
+        session.add_all([bob, game, seattle, bainbridge_island])
         session.commit()
         
+        token = self.get_jwt(bob.name, pw)
+        
         response = self.client.get('/api/games/' + str(game.id) + '/routes',
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -254,17 +427,18 @@ class TestAPI(unittest.TestCase):
         
         route = data[0]
         print(route)
-        self.assertEqual(route['game']['player']['id'], self.user.id)
+        self.assertEqual(route['game']['player']['id'], bob.id)
         self.assertAlmostEqual(route['route_distance'], 7.47, 2)
         # self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         # self.assertEqual(game['cash_available'], 0)  
         
     def test_game_endturn(self):
         ''' end the current turn, run the simulation cycle, and test the response '''
-        self.simulate_login()
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
         # create a new game
-        game = database.Game(player = self.user)
+        game = database.Game(player = bob)
         
         # create terminals
         seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002, passenger_pool = 13000, car_pool = 2000, truck_pool = 300)
@@ -302,11 +476,16 @@ class TestAPI(unittest.TestCase):
             name = 'M/V Wenatchee'
         )
         
-        session.add_all([game, seattle, bainbridge_island, route, ferry_class_A, ferry])
+        session.add_all([bob, game, seattle, bainbridge_island, route, ferry_class_A, ferry])
         session.commit()
         
+        token = self.get_jwt(bob.name, pw)
+        
         response = self.client.get('/api/games/' + str(game.id) + '/endturn',
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -316,7 +495,10 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data['message'], 'success')
 
         response = self.client.get('/api/games/' + str(game.id),
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
@@ -328,7 +510,10 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data['current_week'], 2)
         
         response = self.client.get('/api/games/' + str(game.id) + '/turn-results/' + str(game.current_week), 
-            headers = [('Accept', 'application/json')]
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
         )
         
         self.assertEqual(response.status_code, 200)
