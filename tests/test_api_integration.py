@@ -49,7 +49,7 @@ class TestAPI(unittest.TestCase):
             "password": password
         }
             
-        response = self.client.post('/auth',
+        response = self.client.post(app.config['JWT_AUTH_URL_RULE'],
             data = json.dumps(data),
             content_type = 'application/json',
             headers = [('Accept', 'application/json')]
@@ -180,7 +180,7 @@ class TestAPI(unittest.TestCase):
             "password": "notsecret"
         }
         
-        response = self.client.post('/auth',
+        response = self.client.post(app.config['JWT_AUTH_URL_RULE'],
             data = json.dumps(data),
             content_type = 'application/json',
             headers = [('Accept', 'application/json')]
@@ -192,7 +192,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('ascii'))
         token = data['access_token']
         
-        response = self.client.get('/api/token_test',
+        response = self.client.get('/api/user',
             data = json.dumps(data),
             content_type = 'application/json',
             headers = [
@@ -341,14 +341,14 @@ class TestAPI(unittest.TestCase):
         pw = 'notsecret'
         bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
-        game = database.Game(player = bob)
+        # game = database.Game(player = bob)
         
-        session.add_all([bob, game])
+        session.add(bob)
         session.commit()
         
         token = self.get_jwt(bob.name, pw)
         
-        response = self.client.get('/api/games',
+        response = self.client.post('/api/games',
              headers = [
                 ('Accept', 'application/json'),
                 ('Authorization', 'JWT ' + token)
@@ -359,14 +359,13 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 1)
+        self.assertEqual(len(data), 6)
         
-        game = data[0]
-        self.assertEqual(game['player']['id'], bob.id)
-        self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
-        self.assertEqual(game['cash_available'], 0)
-        self.assertEqual(game['current_week'], 1)
-        self.assertEqual(game['current_year'], 2000)
+        self.assertEqual(data['player']['id'], bob.id)
+        self.assertLessEqual(data['created_date'], unix_timestamp(datetime.now()))
+        self.assertEqual(data['cash_available'], 0)
+        self.assertEqual(data['current_week'], 1)
+        self.assertEqual(data['current_year'], 2000)
         
     def test_get_empty_routes(self):
         ''' try to get routes for a game where none exist '''

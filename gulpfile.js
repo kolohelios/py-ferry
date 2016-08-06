@@ -235,7 +235,7 @@ gulp.task('reload', function() {
 
 gulp.task('browser-sync', function() {
   browserSync({
-    proxy: 'http://localhost:8080',
-    port: 3000
+    proxy: 'http://localhost:8000',
+    port: 8080
   });
 });
