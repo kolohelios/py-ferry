@@ -7,7 +7,7 @@ itsdangerous
 jsonschema
 nose
 psycopg2
-flask-login
+flask-JWT
 flask-script
 flask-migrate
 geopy
