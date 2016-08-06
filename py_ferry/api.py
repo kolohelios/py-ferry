@@ -3,7 +3,6 @@ import json
 
 # TODO consider replacing the use of the json library with jsonify
 from flask import request, Response, url_for, send_from_directory
-# from flask_login import login_user, login_required, current_identity, logout_user, login_serializer
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import check_password_hash
 from jsonschema import validate, ValidationError
@@ -12,7 +11,6 @@ from . import decorators
 from py_ferry import app
 from py_ferry import database
 from py_ferry import models
-# from py_ferry.database import User
 from .database import session
 
 # def current_identity_authorized(record_type, id):
