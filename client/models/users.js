@@ -5,6 +5,7 @@ angular.module('py-ferry')
   function User() {}
   
   User.user = {};
+  User.checkedLocalStorage = false;
 
   User.login = function(data) {
     var self = this;

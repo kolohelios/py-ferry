@@ -11,18 +11,18 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
         span.icon-bar
       a.navbar-brand(ui-sref='home' href="") py-ferry
     .collapse.navbar-collapse(uib-collapse="isCollapsed" collapse="isCollapsed")
-      ul.main-menu.nav.navbar-nav.navbar-left
-        li.dropdown
-          a(href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Games
-            i.fa.fa-chevron-down
-          ul.dropdown-menu
-            li
-              a(ui-sref="gamesList" href="" ng-click="collapse()") Games List
-            li(ng-repeat="game in games")
-              a(ui-sref="/" href="" ng-click="collapse()") {{game.name}}
+      // ul.main-menu.nav.navbar-nav.navbar-left
+      //   li.dropdown
+      //     a(href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Games
+      //       i.fa.fa-chevron-down
+      //     ul.dropdown-menu
+      //       li
+      //         a(ui-sref="gamesList" href="" ng-click="collapse()") Games List
+      //       li(ng-repeat="game in games")
+      //         a(ui-sref="/" href="" ng-click="collapse()") {{game.name}}
+      //   li
+      //     a(ui-sref="/" href="" ng-click="isCollapsed = true") Next Turn
+      ul.main-menu.nav.navbar-nav.navbar-right(ng-if="userLoggedIn()")
         li
-          a(ui-sref="/" href="" ng-click="isCollapsed = true") Next Turn
-      ul.main-menu.nav.navbar-nav.navbar-right
-        li
-          a(ng-click="logout(); isCollapsed = true") Logout
+          a(href="" ng-click="logout(); isCollapsed = true") Logout
           

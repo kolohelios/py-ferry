@@ -6,6 +6,11 @@ Right now, not much of anything; just a concept. I ride the Seattle - Bainbridge
 ## Where can I learn more?
 There are some images in the /notes folder that are photos that were taken from some hand-written notes from a whiteboard and a notebook.
 
+## Todo
+These are more major issues that aren't related to a specific method, function, or property.
+
+* Trucks take up truck (tall spaces) as well as car spaces but that is not currently reflected in capacity calculations for sailings.
+
 ## Sidelines
 
 * add storage for finished game (stats and history)
@@ -22,42 +27,53 @@ There are some images in the /notes folder that are photos that were taken from 
     * more tall spaces
 
 ## REST API Endpoints
+
 ### /api - base URI
-no endpoints
+
+* no endpoints
 
 ### /api/terminals
-GET - returns all of the terminals available
+
+* GET - returns all of the terminals available
 
 ### /api/ferry_classes
-GET - returns all of the ferry classes available
+
+* GET - returns all of the ferry classes available
 
 ### /api/games
-GET - returns all games for a user
-POST - create a game for user
+
+* GET - returns all games for a user
+* POST - create a game for user
 
 ### /api/games/{game ID}
-GET - returns a player's game
-DELETE - destroy a game for user
+
+* GET - returns a player's game
+* DELETE - destroy a game for user
 
 ### /api/games/{game ID}/endturn
-GET ends the current week's turn
+
+* GET ends the current week's turn
 
 ### /api/games/{game ID}/ferries
-GET - returns all of a player's ferries
-POST - buy ferry
+
+* GET - returns all of a player's ferries
+* POST - buy ferry
 
 ### /api/games/{game ID}/ferries/{ferry ID}
-GET - ferry details (unknown if this will be used)
-DELETE - sell ferry
+
+* GET - ferry details (unknown if this will be used)
+* DELETE - sell ferry
 
 ### /api/games/{game ID}/routes
-GET - returns all routes for a player's game
-POST - create route
+
+* GET - returns all routes for a player's game
+* POST - create route
 
 ### /api/games/{game ID}/routes/{route ID}
-GET - returns a single route for a player's game
-PUT - update route
-DELETE - destroy route
+
+* GET - returns a single route for a player's game
+* PUT - update route
+* DELETE - destroy route
 
 
 [![Creative Commons License](https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-nd/4.0/)  
