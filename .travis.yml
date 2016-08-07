@@ -20,7 +20,8 @@ env:
 before_script:
     - psql -c 'create database "py-ferry-test";' -U postgres
     - gulp build
+    - export PYTHONPATH=$PYTHONPATH:$(pwd)
 script:
-    - PYTHONPATH=/usr/lib/python3/dist-packages:/usr/local/lib/python3.4/dist-packages python3 tests/test_models_unit.py
-    - PYTHONPATH=/usr/lib/python3/dist-packages:/usr/local/lib/python3.4/dist-packages python3 tests/test_views_integration.py
-    - PYTHONPATH=/usr/lib/python3/dist-packages:/usr/local/lib/python3.4/dist-packages python3 tests/test_acceptance.py
+    - python3 tests/test_models_unit.py
+    - python3 tests/test_views_integration.py
+    - python3 tests/test_acceptance.py
