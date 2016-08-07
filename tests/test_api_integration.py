@@ -208,8 +208,36 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(data['id'], 2)
         self.assertEqual(data['name'], 'BestBureaucrat')
         
+    # TODO use this test, or something similar, when I figure out how to add a refresh token endpoint
+    # def test_refresh_token(self):
+    #     ''' test refreshing a token '''
+        
+    #     pw = 'notsecret'
+    #     bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        
+    #     session.add(bob)
+    #     session.commit()
+        
+    #     token = self.get_jwt(bob.name, pw)
+        
+    #     response = self.client.get('/api/refresh_token',
+    #         headers = [
+    #             ('Accept', 'application/json'),
+    #             ('Authorization', 'JWT ' + token)    
+    #         ]
+    #     )
+        
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.mimetype, 'application/json')
+        
+    #     data = json.loads(response.data.decode('ascii'))
+    #     print(data)
+    #     self.assertEqual(len(data), 0)
+        
+        
     def test_get_empty_ferry_classes(self):
         ''' test getting empty ferry class list '''
+        
         response = self.client.get('/api/ferry_classes',
             headers = [('Accept', 'application/json')]
         )

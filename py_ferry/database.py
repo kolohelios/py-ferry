@@ -2,7 +2,7 @@ import os.path
 
 from flask import url_for
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Float, DateTime, Sequence, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, String, Float, DateTime, Sequence, ForeignKey
 from sqlalchemy.orm import relationship
 # from flask_login import UserMixin
 from geopy.distance import vincenty
@@ -121,6 +121,7 @@ class Game(Base):
         }
     
     id = Column(Integer, primary_key = True)
+    active = Column(Boolean, default = True)
     created_date = Column(DateTime, default = datetime.now)
     current_week = Column(Integer, default = 1)
     current_year = Column(Integer, default = 2000)
