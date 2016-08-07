@@ -4,9 +4,6 @@ angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
 ['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry',
 function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
-    if(!Utils.userLoggedIn()) {
-        $state.go('login');
-    }
     
     var gameId = $state.params.gameId;
     

@@ -1,17 +1,9 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('NavCtrl', ['$scope', '$state', 'User', function($scope, $state, User) {
+.controller('NavCtrl', ['$scope', '$state', 'User', 'Utils', function($scope, $state, User, Utils) {
   
-  User.checkTokenFromLocalStorage()
-  .then(function(response) {
-    console.log(response);
-    $state.go('gamesList');
-  })
-  .catch(function(error) {
-    console.error(error);
-    $state.go('login')
-  });
+  // Utils.userLoggedIn();
   
   $scope.logout = function() {
     User.logout();
@@ -22,5 +14,9 @@ angular.module('py-ferry')
 
   $scope.collapse = function() {
     $scope.isCollapsed = true;
+  };
+  
+  $scope.userLoggedIn = function() {
+    return User.user.id && User.user.id > 0;
   };
 }]);

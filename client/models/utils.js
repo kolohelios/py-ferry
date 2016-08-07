@@ -7,8 +7,16 @@ angular.module('py-ferry')
   Utils.userLoggedIn = function() {
     if(User.user.id && User.user.id > 0) {
         return true;
+    } else if(!User.checkedLocalStorage) {
+      User.checkedLocalStorage = true;
+      User.checkTokenFromLocalStorage()
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
     }
-    return false;
   };
   
   return Utils;
