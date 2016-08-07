@@ -88,7 +88,8 @@ class Ferry(Base):
         return {
             "id": self.id,
             "name": self.name,
-            "ferry_class": self.ferry_class.as_dictionary()
+            "ferry_class": self.ferry_class.as_dictionary(),
+            "launched": self.launched,
         }
     
     def depreciated_value(self, year):
@@ -125,7 +126,7 @@ class Game(Base):
     created_date = Column(DateTime, default = datetime.now)
     current_week = Column(Integer, default = 1)
     current_year = Column(Integer, default = 2000)
-    cash_available = Column(Float, default = 0)
+    cash_available = Column(Float, default = 1000000)
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
     routes = relationship('Route', backref = 'game')
