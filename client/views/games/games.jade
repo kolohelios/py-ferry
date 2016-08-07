@@ -1,5 +1,27 @@
 #games.container
     h1 Games
-    
+    table.table.table-striped
+        thead
+            tr
+                th Play Game
+                th Created
+                th Game Year - Week
+                th Cash Available
+                th Ferries
+                th Routes
+                th Profit/Week
+                th Delete Game
+        tbody
+            tr(ng-repeat="game in games")
+                td
+                    i.fa.fa-play
+                td(ng-bind="game.created_date * 1000 | date")
+                td(ng-bind="game.current_year + ' - ' + game.current_week")
+                td(ng-bind="game.cash_available")
+                td(ng-bind="game.ferries.length")
+                td(ng-bind="game.routes.length")
+                td(ng-bind="")
+                td
+                    i.fa.fa-trash
     
     a.btn.btn-primary(ng-click="createGame()") Create New Game

@@ -138,6 +138,23 @@ def games_get_one(game_id):
     data = json.dumps(game.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     
+@app.route('/api/games/<int:game_id>', methods = ['DELETE'])
+@jwt_required()
+@decorators.accept('application/json')
+def games_delete(game_id):
+    ''' get player game '''
+
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_identity:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+
+    session.delete(game)
+    # because returning the record when we delete is what we do...
+    data = json.dumps(game.as_dictionary())
+    return Response(data, 200, mimetype = 'application/json')
+    
 @app.route('/api/games/<int:game_id>/routes', methods = ['GET'])
 @jwt_required()
 @decorators.accept('application/json')

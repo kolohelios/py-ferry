@@ -1,18 +1,20 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('GamesCtrl', ['$scope', '$state', 'Game', function($scope, $state, Game) {
+.controller('GamesCtrl', ['$scope', '$state', 'Game', 'Utils', function($scope, $state, Game, Utils) {
+    if(!Utils.userLoggedIn()) {
+        $state.go('login');
+    }
     
     Game.list()
-    .then(function(response) {
-        $scope.games = response;
-        console.log(response);
+    .then(function() {
+        $scope.games = Game.games;
     })
     .catch(function(error){
         console.error(error);
     });
     
     $scope.createGame = function() {
-      Game.createGame();  
+      Game.createGame();
     };
 }]);
