@@ -1,6 +1,6 @@
 sudo: required
 dist: trusty
-language: node_js
+language: python
 node_js:
     - "5.5"
 python:
@@ -14,7 +14,6 @@ before_install:
 install: 
     - npm install -g gulp
     - npm install
-    - cd project
     - sudo python3 -m pip install -r requirements.txt
 env:
     - CONFIG_PATH=py_ferry.config.TravisConfig
