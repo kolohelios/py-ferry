@@ -40,6 +40,28 @@ angular.module('py-ferry')
       url: apiUrl + '/user',
     });
   };
+  
+  User.checkTokenFromLocalStorage = function() {
+    var d = $q.defer();
+    var self = this;
+    var token = localStorage.getItem('accessToken');
+    $http.defaults.headers.common.Authorization = 'JWT ' + token;
+    this.getUser()
+      .then(function(response) {
+          self.user = response.data;
+          d.resolve(self.user);
+      })
+      .catch(function(error) {
+          d.reject(error);
+      });
+      return d.promise;
+  };
+  
+  User.logout = function() {
+    this.user = {};
+    $http.defaults.headers.common.Authorization = '';
+    localStorage.setItem('accessToken', '');
+  }
 
   return User;
 }]);

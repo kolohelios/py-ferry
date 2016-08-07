@@ -14,7 +14,8 @@
         tbody
             tr(ng-repeat="game in games")
                 td
-                    i.fa.fa-play
+                    a(ui-sref="gamesDetail({ gameId: game.id })")
+                        i.fa.fa-play()
                 td(ng-bind="game.created_date * 1000 | date")
                 td(ng-bind="game.current_year + ' - ' + game.current_week")
                 td(ng-bind="game.cash_available")
@@ -22,6 +23,9 @@
                 td(ng-bind="game.routes.length")
                 td(ng-bind="")
                 td
-                    i.fa.fa-trash
+                    i.fa.fa-trash(ng-click="deleteGame(game.id)")
+            tr(ng-if="games.length == 0")
+                td(colspan="8")
+                    span You have no active games.
     
     a.btn.btn-primary(ng-click="createGame()") Create New Game

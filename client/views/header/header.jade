@@ -24,7 +24,5 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
           a(ui-sref="/" href="" ng-click="isCollapsed = true") Next Turn
       ul.main-menu.nav.navbar-nav.navbar-right
         li
-          a(ui-sref="contactUs" href="" ng-click="isCollapsed = true")
-            .glyphicon.glyphicon-envelope
-            span &nbsp;Contact Us
+          a(ng-click="logout(); isCollapsed = true") Logout
           

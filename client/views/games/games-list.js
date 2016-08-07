@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('GamesCtrl', ['$scope', '$state', 'Game', 'Utils', function($scope, $state, Game, Utils) {
+.controller('GamesListCtrl', ['$scope', '$state', 'Game', 'Utils', function($scope, $state, Game, Utils) {
     if(!Utils.userLoggedIn()) {
         $state.go('login');
     }
@@ -12,9 +12,14 @@ angular.module('py-ferry')
     })
     .catch(function(error){
         console.error(error);
+        console.log(error);
     });
     
     $scope.createGame = function() {
-      Game.createGame();
+        Game.createGame();
+    };
+    
+    $scope.deleteGame = function(gameId) {
+        Game.deleteGame(gameId)
     };
 }]);

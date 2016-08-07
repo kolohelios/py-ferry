@@ -50,6 +50,17 @@ def register():
 def get_identity_with_token():
     data = json.dumps(current_identity.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
+    
+# TODO someday I'd like to get a refresh token endpoint working
+# @app.route('/api/refresh_token')
+# @jwt_required()
+# def get_refreshed_token():
+#     # token = JWT.generate_token(current_identity)
+#     # data = json.dumps({ 'access_token': token })
+#     payload = jwt.payload_callback(current_identity)
+#     new_token = jwt.encode_callback(payload)
+#     data = json.dumps({ 'access_token': new_token })
+#     return Response(data, 200, mimetype = 'application/json')
 
 @app.route('/api/ferry_classes', methods = ['GET'])
 @decorators.accept('application/json')
@@ -94,6 +105,7 @@ def ferries_get(game_id):
 @app.route('/api/games', methods = ['POST'])
 @jwt_required()
 @decorators.accept('application/json')
+# TODO yes, there should be a limit to the number of active games a player can have
 def games_new():
     ''' create a new player game '''
     
@@ -112,7 +124,7 @@ def games_get():
     ''' get player games '''
 
     # make sure the game ID belongs to the current user
-    games = session.query(database.Game).filter(database.Game.player == current_identity)
+    games = session.query(database.Game).filter(database.Game.player == current_identity, database.Game.active == True)
     # if not game.player == current_identity:
     #     data = {'message': 'The game ID for the request does not belong to the current user.'}
     #     return Response(data, 403, mimetype = 'application/json')
@@ -150,8 +162,9 @@ def games_delete(game_id):
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
 
-    session.delete(game)
-    # because returning the record when we delete is what we do...
+    game.active = False;
+    session.commit();
+    # because returning the record when we delete is what we do... (though it's not really deleted)
     data = json.dumps(game.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     

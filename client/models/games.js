@@ -37,6 +37,21 @@ angular.module('py-ferry')
         return Error;
     });
   };
+  
+  Game.deleteGame = function(gameId) {
+    var self = this;
+    $http({
+        method: 'DELETE',
+        url: apiUrl + '/games/' + gameId
+    })
+    .then(function(response) {
+        _.remove(self.games, {id: gameId});
+        return true;
+    })
+    .catch(function() {
+        return Error;
+    });
+  };
 
   return Game;
 }]);
