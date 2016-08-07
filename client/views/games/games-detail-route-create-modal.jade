@@ -1,0 +1,22 @@
+#games
+    .modal-header
+        h3.modal-title Create Route
+        a.pull-right(href="" ng-click="cancel()" style="margin-top: -25px;") X
+    .modal-body
+        p Between
+        .row
+            .col-xs-6
+                .form-group
+                    select(ng-model="terminal1")
+                        option(ng-repeat="terminal in terminals" ng-bind="terminal.name")
+            .col-xs-6
+                .form-group
+                    select(ng-model="terminal2")
+                        option(ng-repeat="terminal in terminals" ng-bind="terminal.name")
+        .form-group(style="clear: both; padding-top: 50px;")
+            label(for="name") Name
+            input(type="text" id="name" ng-model="ferry.name" placeholder="Name")
+    .modal-footer
+        button.btn.btn-default(ng-click="buy()") Create
+        button.btn.btn-default(ng-click="cancel()") Cancel
+    

@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('GamesDetailCtrl', ['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Ferry', function($scope, $state, Game, Utils, $uibModal, FerryClass, Ferry) {
+.controller('GamesDetailCtrl', 
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
     if(!Utils.userLoggedIn()) {
         $state.go('login');
     }
@@ -11,6 +13,14 @@ angular.module('py-ferry')
     FerryClass.list()
        .then(function(response) {
           $scope.ferryClasses = response; 
+       })
+       .catch(function(error) {
+           console.error(error);
+       });
+       
+    Terminal.list()
+        .then(function(response) {
+          $scope.terminals = response; 
        })
        .catch(function(error) {
            console.error(error);
@@ -41,7 +51,7 @@ angular.module('py-ferry')
         var modalInstance = $uibModal.open({
            animation: $scope.animationsEnabled,
            templateUrl: 'views/games/games-detail-ferry-buy-modal.html',
-           controller: 'ModalInstanceCtrl',
+           controller: 'GamesDetailFerryBuyModalInstanceCtrl',
            size: 'md',
            resolve: {
                ferryClasses: function() {
@@ -50,6 +60,28 @@ angular.module('py-ferry')
                },
                gameId: function() {
                    return gameId;
+               }
+           }
+        });
+        
+        modalInstance.result.then(function() {
+        }, function() {
+          console.info('Modal dismissed at: ' + new Date());
+        });
+    }
+    
+    $scope.route = {};
+    
+    $scope.route.create = function() {
+        var modalInstance = $uibModal.open({
+           animation: $scope.animationsEnabled,
+           templateUrl: 'views/games/games-detail-route-create-modal.html',
+           controller: 'GamesDetailRouteCreateModalInstanceCtrl',
+           size: 'md',
+           resolve: {
+               terminals: function() {
+                   console.log($scope.terminals);
+                   return $scope.terminals;
                }
            }
         });
