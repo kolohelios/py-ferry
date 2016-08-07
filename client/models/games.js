@@ -23,6 +23,13 @@ angular.module('py-ferry')
     return d.promise;
   };
   
+  Game.fetch = function(gameId) {
+    return $http({
+      method: 'GET',
+      url: apiUrl + '/game/' + gameId
+    });
+  };
+  
   Game.createGame = function() {
     var self = this;
     $http({

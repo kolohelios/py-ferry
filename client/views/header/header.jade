@@ -17,7 +17,7 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
             i.fa.fa-chevron-down
           ul.dropdown-menu
             li
-              a(ui-sref="/" href="" ng-click="collapse()") Games List
+              a(ui-sref="gamesList" href="" ng-click="collapse()") Games List
             li(ng-repeat="game in games")
               a(ui-sref="/" href="" ng-click="collapse()") {{game.name}}
         li
