@@ -1,12 +1,23 @@
-language: python
+sudo: required
+language: node_js
+node_js:
+    - "5.5"
 python:
     - "3.4"
-install: python3 -m pip install -r requirements.txt
+before_install:
+    - sudo apt-get -y install python3-pip python-dev
+    - sudo pip3 install -U setuptools
+    - sudo pip3 install -U virtualenvwrapper
+    - python3 -V
+    - pip3 -V
+install: 
+    - npm install -g gulp
+    - npm install
+    - python3 -m pip install -r requirements.txt
 env:
     - CONFIG_PATH=py_ferry.config.TravisConfig
 before_script:
     - psql -c 'create database "py-ferry-test";' -U postgres
-    - npm i
     - gulp build
 script:
     - PYTHONPATH=. python3 tests/test_models_unit.py
