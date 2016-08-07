@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('ModalInstanceCtrl', ['$scope', '$uibModalInstance', 'ferryClasses', 'gameId', 'Ferry', function ($scope, $uibModalInstance, ferryClasses, gameId, Ferry) {
+.controller('GamesDetailFerryBuyModalInstanceCtrl', ['$scope', '$uibModalInstance', 'ferryClasses', 'gameId', 'Ferry', function ($scope, $uibModalInstance, ferryClasses, gameId, Ferry) {
 
   $scope.ferryClasses = ferryClasses;
   $scope.ferry = {};

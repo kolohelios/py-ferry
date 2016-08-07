@@ -1,5 +1,4 @@
 #games.container
-    h1 Game
     .row
         .col-xs-12.col-sm-5
             p image here
@@ -10,26 +9,22 @@
             .row
                 .col-xs-6.col-sm-5
                     br
-                    br
                     a.btn.btn-default(href="" ng-click="ferry.buy()") Buy Ferry
                     a.btn.btn-default(href="" ng-click="ferry.sell()") Sell Ferry
                     a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
                     a.btn.btn-default(href="") Staffing
                 .col-xs-6.col-sm-7
                      .panel.panel-default
-                        .panel-title Ferries
-                            p {{ferries}}
+                        p {{ferries}}
             .row
                 .col-xs-5.col-xs-offset-5
                     h3 Routes
             .row
                 .col-xs-6.col-sm-5
-                        a.btn.btn-default(href="" ng-click="ferry.buy()") Buy Ferry
-                        a.btn.btn-default(href="" ng-click="ferry.sell()") Sell Ferry
-                        a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
-                        a.btn.btn-default(href="") Staffing
+                    br
+                    a.btn.btn-default(href="" ng-click="route.create()") Create Route
+                    a.btn.btn-default(href="" ng-click="ferry.sell()") Edit Route
                 .col-xs-6.col-sm-7
                      .panel.panel-default
-                        .panel-title Ferries
-                            p {{ferries}}
+                        p {{routes}}
         
