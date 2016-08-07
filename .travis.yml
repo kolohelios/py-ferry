@@ -22,5 +22,5 @@ before_script:
     - gulp build
 script:
     - PYTHONPATH=. python3 tests/test_models_unit.py
-    - PYTHONPATH=. python3 tests/api_integration.py
+    - PYTHONPATH=. python3 tests/test_api_integration.py
     - PYTHONPATH=. python3 tests/test_acceptance.py
