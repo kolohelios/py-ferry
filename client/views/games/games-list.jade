@@ -18,12 +18,13 @@
                         i.fa.fa-play()
                 td(ng-bind="game.created_date * 1000 | date")
                 td(ng-bind="game.current_year + ' - ' + game.current_week")
-                td(ng-bind="game.cash_available")
+                td(ng-bind="game.cash_available | currency : '$' : 0")
                 td(ng-bind="game.ferries.length")
                 td(ng-bind="game.routes.length")
                 td(ng-bind="")
                 td
-                    i.fa.fa-trash(ng-click="deleteGame(game.id)")
+                    a(href="" ng-click="deleteGame(game.id)")
+                        i.fa.fa-trash
             tr(ng-if="games.length == 0")
                 td(colspan="8")
                     span You have no active games.

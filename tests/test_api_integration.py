@@ -513,7 +513,7 @@ class TestAPI(unittest.TestCase):
         token = self.get_jwt(bob.name, pw)
         
         data = {
-            "ferryClassId": ferry_class_A.id,
+            "classId": ferry_class_A.id,
             "name": "M/V Wenatchee"
         }
         
@@ -569,7 +569,7 @@ class TestAPI(unittest.TestCase):
         token = self.get_jwt(bob.name, pw)
         
         data = {
-            "ferryClassId": ferry_class_A.id,
+            "classId": ferry_class_A.id,
             "name": "M/V Wenatchee"
         }
         

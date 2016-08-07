@@ -117,8 +117,8 @@ class Game(Base):
             "cash_available": self.cash_available,
             "current_week": self.current_week,
             "current_year": self.current_year,
-            "ferry_count": len(self.ferries),
-            "route_count": len(self.routes),
+            "ferries": [ferry.as_dictionary() for ferry in self.ferries],
+            "routes": [route.as_dictionary() for route in self.routes],
         }
     
     id = Column(Integer, primary_key = True)

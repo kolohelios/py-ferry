@@ -1,16 +1,35 @@
 #games.container
     h1 Game
     .row
-        .col-xs-12.col-sm-6.col-md-4
+        .col-xs-12.col-sm-5
             p image here
-        .col-xs-12.col-sm-4.col-md-4
-            a.btn.btn-default(href="" ng-click="ferry.buy()") Buy Ferry
-            a.btn.btn-default(href="" ng-click="ferry.sell()") Sell Ferry
-            a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
-            a.btn.btn-default(href="") Staffing
-        .col-xs-12.col-sm-3.col-md-4
-            .panel.panel-default
-                .panel-title Routes
-                p {{game.routes}}
-            .panel.panel-default
-                .panel-title Ferries
+        .col-xs-12.col-sm-7.col-md-4
+            .row
+                .col-xs-5.col-xs-offset-5
+                    h3 Ferries
+            .row
+                .col-xs-6.col-sm-5
+                    br
+                    br
+                    a.btn.btn-default(href="" ng-click="ferry.buy()") Buy Ferry
+                    a.btn.btn-default(href="" ng-click="ferry.sell()") Sell Ferry
+                    a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
+                    a.btn.btn-default(href="") Staffing
+                .col-xs-6.col-sm-7
+                     .panel.panel-default
+                        .panel-title Ferries
+                            p {{ferries}}
+            .row
+                .col-xs-5.col-xs-offset-5
+                    h3 Routes
+            .row
+                .col-xs-6.col-sm-5
+                        a.btn.btn-default(href="" ng-click="ferry.buy()") Buy Ferry
+                        a.btn.btn-default(href="" ng-click="ferry.sell()") Sell Ferry
+                        a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
+                        a.btn.btn-default(href="") Staffing
+                .col-xs-6.col-sm-7
+                     .panel.panel-default
+                        .panel-title Ferries
+                            p {{ferries}}
+        

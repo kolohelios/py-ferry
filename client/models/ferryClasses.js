@@ -24,7 +24,6 @@ angular.module('py-ferry')
             d.reject(error);
         });
     }
-    
     return d.promise;
   };
 

@@ -100,8 +100,7 @@ def ferries_get(game_id):
 
     data = json.dumps([ferry.as_dictionary() for ferry in ferries])
     return Response(data, 200, mimetype = 'application/json')
-    
-# TODO need to test this endpoint
+
 @app.route('/api/games/<int:game_id>/ferries', methods = ['POST'])
 @jwt_required()
 @decorators.accept('application/json')
@@ -118,17 +117,22 @@ def ferries_post(game_id):
     # make sure the player has enough cash to purchase this ferry
     json_data = request.json
     
-    print(json_data['ferryClassId'])
-    
-    ferry_class = session.query(database.Ferry_Class).get(json_data['ferryClassId'])
+    ferry_class = session.query(database.Ferry_Class).get(json_data['classId'])
     if not game.cash_available > ferry_class.cost:
         data = json.dumps({'message': 'Not enough available cash to purchase the class of ferry.'})
         return Response(data, 402, mimetype = 'application/json')
     
     ferry = database.Ferry(
         ferry_class = ferry_class,
-        name = json_data['name']
+        name = json_data['name'],
+        game = game
     )
+    
+    # reduce cash available by the purchase price
+    game.cash_available -= ferry_class.cost
+    
+    session.add(ferry)
+    session.commit()
     
     data = json.dumps(ferry.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')

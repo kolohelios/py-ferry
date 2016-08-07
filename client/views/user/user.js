@@ -7,8 +7,7 @@ angular.module('py-ferry')
     $scope.login = function() {
         User.login($scope.player)
         .then(function(response) {
-            console.log(response);
-            $state.go('games');
+            $state.go('gamesList');
         })
         .catch(function(error){
             console.error(error);

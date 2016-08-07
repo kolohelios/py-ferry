@@ -2,6 +2,7 @@
 
 angular.module('py-ferry')
 .controller('NavCtrl', ['$scope', '$state', 'User', function($scope, $state, User) {
+  
   User.checkTokenFromLocalStorage()
   .then(function(response) {
     console.log(response);

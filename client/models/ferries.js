@@ -3,16 +3,16 @@
 angular.module('py-ferry')
 .factory('Ferry', ['$http', '$window', '$q', 'apiUrl', '_', function($http, $window, $q, apiUrl, _) {
   function Ferry() {}
-
-  Ferry.buy = function() {
+  
+  Ferry.buy = function(gameId, data) {
     var self = this;
     var d = $q.defer();
     $http({
-      method: 'GET',
-      url: apiUrl + '/games'
+      method: 'POST',
+      url: apiUrl + '/games/' + gameId + '/ferries',
+      data: data
     })
     .then(function(response) {
-        self.games = response.data;
         d.resolve(response);
     })
     .catch(function(error) {
@@ -20,6 +20,25 @@ angular.module('py-ferry')
     });
     return d.promise;
   };
+  
+  Ferry.list = function(gameId) {
+    var d = $q.defer();
+    var self = this;
+    // if(this.ferries.length) {
+    //     d.resolve(this.ferries);
+    // } else {
+        $http({
+          method: 'GET',
+          url: apiUrl + '/games/' + gameId + '/ferries'
+        })
+        .then(function(response) {
+            d.resolve(response.data);
+        })
+        .catch(function(error) {
+            d.reject(error);
+        });
+        return d.promise;
+    }
 
   return Ferry;
 }]);
