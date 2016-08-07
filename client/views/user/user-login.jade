@@ -3,10 +3,10 @@
         .col-xs-12.col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3
             .form-group
                 label(for="name") Player Name
-                input.form-control(type="text" ng-model="player.username" id="name")
+                input.form-control(type="text" ng-model="player.username" name="name" id="name")
             .form-group
                 label(for="password") Password
-                input.form-control(type="password" ng-model="player.password" id="password")
+                input.form-control(type="password" ng-model="player.password" name="password" id="password")
             button.login.btn.btn-primary(type="submit" ng-click="login()") Login
             p.create-account 
                 span Don't have a player account yet?

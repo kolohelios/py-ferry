@@ -6,8 +6,9 @@ env:
     - CONFIG_PATH=py_ferry.config.TravisConfig
 before_script:
     - psql -c 'create database "py-ferry-test";' -U postgres
+    - npm i
+    - gulp build
 script:
-    - PYTHONPATH=. python3 tests/test_api_integration.py
-    - PYTHONPATH=. python3 tests/test_views_integration.py
     - PYTHONPATH=. python3 tests/test_models_unit.py
-    
+    - PYTHONPATH=. python3 tests/test_views_integration.py
+    - PYTHONPATH=. python3 tests/test_acceptance.py
