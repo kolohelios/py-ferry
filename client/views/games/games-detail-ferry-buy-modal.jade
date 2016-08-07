@@ -1,0 +1,23 @@
+#games
+    .modal-header
+        h3.modal-title Buy a Ferry
+    .modal-body
+        span.ferry-class-div(ng-repeat="ferryClass in ferryClasses")
+            h5(ng-bind="ferryClass.name")
+            i.fa.fa-users
+            span(ng-bind="ferryClass.passengers")
+            br
+            i.fa.fa-car
+            span(ng-bind="ferryClass.cars")
+            br
+            i.fa.fa-truck
+            span(ng-bind="ferryClass.trucks")
+            br
+            span(ng-bind="ferryClass.cost | currency")
+        .form-group(style="clear: both; padding-top: 50px;")
+            label(for="name") Name
+            input(type="text" id="name" ng-model="ferryName" placeholder="Name")
+    .modal-footer
+        button.btn.btn-default(ng-click="buy()") Buy
+        button.btn.btn-default(ng-click="cancel()") Cancel
+    
