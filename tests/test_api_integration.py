@@ -389,7 +389,7 @@ class TestAPI(unittest.TestCase):
         
         self.assertEqual(data['player']['id'], bob.id)
         self.assertLessEqual(data['created_date'], unix_timestamp(datetime.now()))
-        self.assertEqual(data['cash_available'], 0)
+        self.assertEqual(data['cash_available'], 1000000)
         self.assertEqual(data['current_week'], 1)
         self.assertEqual(data['current_year'], 2000)
         
@@ -420,7 +420,7 @@ class TestAPI(unittest.TestCase):
         
         self.assertEqual(data['player']['id'], bob.id)
         self.assertLessEqual(data['created_date'], unix_timestamp(datetime.now()))
-        self.assertEqual(data['cash_available'], 0)
+        self.assertEqual(data['cash_available'], 1000000)
         self.assertEqual(data['current_week'], 1)
         self.assertEqual(data['current_year'], 2000)
         
@@ -476,6 +476,120 @@ class TestAPI(unittest.TestCase):
         
         data = json.loads(response.data.decode('ascii'))
         self.assertEqual(len(data), 8)
+    
+    def test_ferry_post(self):
+        ''' test the purchasing of a ferry '''
+        
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        
+        ferry_class_props = { 
+            'name': 'Jumbo Mark II',
+            'passengers': 2500,
+            'cars': 202,
+            'trucks': 60,
+            'speed': 21,
+            'burn_rate': 350,
+            'turnover_time': 0.2,
+            'cost': 50000
+        }
+        
+        ferry_class_A = database.Ferry_Class(
+            name = ferry_class_props['name'],
+            passengers = ferry_class_props['passengers'],
+            cars = ferry_class_props['cars'],
+            trucks = ferry_class_props['trucks'],
+            speed = ferry_class_props['speed'],
+            burn_rate = ferry_class_props['burn_rate'],
+            turnover_time = ferry_class_props['turnover_time'],
+            cost = ferry_class_props['cost'],
+        )
+        
+        game = database.Game(player = bob)
+        
+        session.add_all([bob, game, ferry_class_A])
+        session.commit()
+        
+        token = self.get_jwt(bob.name, pw)
+        
+        data = {
+            "ferryClassId": ferry_class_A.id,
+            "name": "M/V Wenatchee"
+        }
+        
+        response = self.client.post('/api/games/' + str(game.id) + '/ferries',
+            data = json.dumps(data),
+            # TODO all PUT and POST requests should have content_type
+            content_type = 'application/json',
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ],
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 4)
+        
+    def test_ferry_post_insufficient_funds(self):
+        ''' test the purchasing of a ferry when player doesn't have enough available cash '''
+        
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        
+        ferry_class_props = { 
+            'name': 'Jumbo Mark II',
+            'passengers': 2500,
+            'cars': 202,
+            'trucks': 60,
+            'speed': 21,
+            'burn_rate': 350,
+            'turnover_time': 0.2,
+            'cost': 50000000
+        }
+        
+        ferry_class_A = database.Ferry_Class(
+            name = ferry_class_props['name'],
+            passengers = ferry_class_props['passengers'],
+            cars = ferry_class_props['cars'],
+            trucks = ferry_class_props['trucks'],
+            speed = ferry_class_props['speed'],
+            burn_rate = ferry_class_props['burn_rate'],
+            turnover_time = ferry_class_props['turnover_time'],
+            cost = ferry_class_props['cost'],
+        )
+        
+        game = database.Game(player = bob)
+        
+        session.add_all([bob, game, ferry_class_A])
+        session.commit()
+        
+        token = self.get_jwt(bob.name, pw)
+        
+        data = {
+            "ferryClassId": ferry_class_A.id,
+            "name": "M/V Wenatchee"
+        }
+        
+        response = self.client.post('/api/games/' + str(game.id) + '/ferries',
+            data = json.dumps(data),
+            # TODO all PUT and POST requests should have content_type
+            content_type = 'application/json',
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ],
+        )
+        
+        self.assertEqual(response.status_code, 402)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        
+        self.assertEqual(data['message'], 'Not enough available cash to purchase the class of ferry.')
+        
         
     def test_get_empty_routes(self):
         ''' try to get routes for a game where none exist '''

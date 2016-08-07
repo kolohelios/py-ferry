@@ -97,9 +97,40 @@ def ferries_get(game_id):
         return Response(data, 403, mimetype = 'application/json')
     
     ferries = session.query(database.Ferry).filter(database.Ferry.game == game)
-    # ferry = ferry.order_by(models.Ferry_Class.cost)
 
     data = json.dumps([ferry.as_dictionary() for ferry in ferries])
+    return Response(data, 200, mimetype = 'application/json')
+    
+# TODO need to test this endpoint
+@app.route('/api/games/<int:game_id>/ferries', methods = ['POST'])
+@jwt_required()
+@decorators.accept('application/json')
+@decorators.require('application/json')
+def ferries_post(game_id):
+    ''' buy a ferry for a player's game '''
+    
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_identity:
+        data = json.dumps({'message': 'The game ID for the request does not belong to the current user.'})
+        return Response(data, 403, mimetype = 'application/json')
+    
+    # make sure the player has enough cash to purchase this ferry
+    json_data = request.json
+    
+    print(json_data['ferryClassId'])
+    
+    ferry_class = session.query(database.Ferry_Class).get(json_data['ferryClassId'])
+    if not game.cash_available > ferry_class.cost:
+        data = json.dumps({'message': 'Not enough available cash to purchase the class of ferry.'})
+        return Response(data, 402, mimetype = 'application/json')
+    
+    ferry = database.Ferry(
+        ferry_class = ferry_class,
+        name = json_data['name']
+    )
+    
+    data = json.dumps(ferry.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games', methods = ['POST'])
@@ -125,12 +156,6 @@ def games_get():
 
     # make sure the game ID belongs to the current user
     games = session.query(database.Game).filter(database.Game.player == current_identity, database.Game.active == True)
-    # if not game.player == current_identity:
-    #     data = {'message': 'The game ID for the request does not belong to the current user.'}
-    #     return Response(data, 403, mimetype = 'application/json')
-    
-    # ferries = session.query(database.Ferry).filter(database.Ferry.game == game)
-    # ferry = ferry.order_by(models.Ferry_Class.cost)
 
     data = json.dumps([game.as_dictionary() for game in games])
     return Response(data, 200, mimetype = 'application/json')
