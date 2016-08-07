@@ -14,6 +14,7 @@ before_install:
 install: 
     - npm install -g gulp
     - npm install
+    - cd project
     - sudo python3 -m pip install -r requirements.txt
 env:
     - CONFIG_PATH=py_ferry.config.TravisConfig
