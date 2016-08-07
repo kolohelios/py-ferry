@@ -7,12 +7,14 @@ angular.module('py-ferry')
   Game.games = [];
 
   Game.list = function() {
+    var self = this;
     var d = $q.defer();
     $http({
       method: 'GET',
       url: apiUrl + '/games'
     })
     .then(function(response) {
+        self.games = response.data;
         d.resolve(response);
     })
     .catch(function(error) {
@@ -22,9 +24,17 @@ angular.module('py-ferry')
   };
   
   Game.createGame = function() {
-    return $http({
+    var self = this;
+    $http({
         method: 'POST',
         url: apiUrl + '/games'
+    })
+    .then(function(response) {
+        self.games.push(response.data);
+        return true;
+    })
+    .catch(function() {
+        return Error;
     });
   };
 

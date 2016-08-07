@@ -341,8 +341,6 @@ class TestAPI(unittest.TestCase):
         pw = 'notsecret'
         bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
-        # game = database.Game(player = bob)
-        
         session.add(bob)
         session.commit()
         
@@ -359,13 +357,97 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 6)
+        self.assertEqual(len(data), 8)
         
         self.assertEqual(data['player']['id'], bob.id)
         self.assertLessEqual(data['created_date'], unix_timestamp(datetime.now()))
         self.assertEqual(data['cash_available'], 0)
         self.assertEqual(data['current_week'], 1)
         self.assertEqual(data['current_year'], 2000)
+        
+    def test_delete_game(self):
+        ''' delete a game for a user '''
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        
+        game = database.Game(player = bob)
+        
+        session.add_all([bob, game])
+        session.commit()
+        
+        token = self.get_jwt(bob.name, pw)
+        
+        response = self.client.delete('/api/games/' + str(game.id),
+             headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 8)
+        
+        self.assertEqual(data['player']['id'], bob.id)
+        self.assertLessEqual(data['created_date'], unix_timestamp(datetime.now()))
+        self.assertEqual(data['cash_available'], 0)
+        self.assertEqual(data['current_week'], 1)
+        self.assertEqual(data['current_year'], 2000)
+        
+        # now, make sure that there are precisely zero games
+        response = self.client.get('/api/games',
+             headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 0)
+        
+    def test_delete_game_failure(self):
+        ''' try to delete someone else's game '''
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        george = database.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com', password = generate_password_hash(pw))
+        
+        game = database.Game(player = bob)
+        
+        session.add_all([bob, george, game])
+        session.commit()
+        
+        token = self.get_jwt(george.name, pw)
+        
+        response = self.client.delete('/api/games/' + str(game.id),
+             headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        # and now make sure that Bob still has his game
+        token = self.get_jwt(bob.name, pw)
+        
+        response = self.client.get('/api/games/' + str(game.id),
+             headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 8)
         
     def test_get_empty_routes(self):
         ''' try to get routes for a game where none exist '''
@@ -426,7 +508,7 @@ class TestAPI(unittest.TestCase):
         
         route = data[0]
         print(route)
-        self.assertEqual(route['game']['player']['id'], bob.id)
+        # self.assertEqual(route['game']['player']['id'], bob.id)
         self.assertAlmostEqual(route['route_distance'], 7.47, 2)
         # self.assertLessEqual(game['created_date'], unix_timestamp(datetime.now()))
         # self.assertEqual(game['cash_available'], 0)  

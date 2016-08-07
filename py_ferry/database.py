@@ -116,6 +116,8 @@ class Game(Base):
             "cash_available": self.cash_available,
             "current_week": self.current_week,
             "current_year": self.current_year,
+            "ferry_count": len(self.ferries),
+            "route_count": len(self.routes),
         }
     
     id = Column(Integer, primary_key = True)
@@ -156,7 +158,6 @@ class Route(Base):
     def as_dictionary(self):
         return {
             "id": self.id,
-            "game": self.game.as_dictionary(),
             "first_terminal": self.first_terminal.as_dictionary(),
             "second_terminal": self.second_terminal.as_dictionary(),
             "route_distance": self.route_distance(),
