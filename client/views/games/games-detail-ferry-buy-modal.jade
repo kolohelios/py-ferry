@@ -1,22 +1,23 @@
 #games
     .modal-header
         h3.modal-title Buy a Ferry
+        a.pull-right(href="" ng-click="cancel()" style="margin-top: -25px;") X
     .modal-body
-        span.ferry-class-div(ng-repeat="ferryClass in ferryClasses")
+        span.ferry-class-div(ng-repeat="ferryClass in ferryClasses" ng-click="selectFerryClass(ferryClass.id)" ng-class="{ selected: ferry.classId == ferryClass.id }")
             h5(ng-bind="ferryClass.name")
             i.fa.fa-users
-            span(ng-bind="ferryClass.passengers")
+            span(ng-bind="ferryClass.passengers | number : 0")
             br
             i.fa.fa-car
-            span(ng-bind="ferryClass.cars")
+            span(ng-bind="ferryClass.cars | number : 0")
             br
             i.fa.fa-truck
-            span(ng-bind="ferryClass.trucks")
+            span(ng-bind="ferryClass.trucks | number : 0")
             br
-            span(ng-bind="ferryClass.cost | currency")
+            p(ng-bind="ferryClass.cost | currency : '$' : 0")
         .form-group(style="clear: both; padding-top: 50px;")
             label(for="name") Name
-            input(type="text" id="name" ng-model="ferryName" placeholder="Name")
+            input(type="text" id="name" ng-model="ferry.name" placeholder="Name")
     .modal-footer
         button.btn.btn-default(ng-click="buy()") Buy
         button.btn.btn-default(ng-click="cancel()") Cancel

@@ -79,8 +79,8 @@
                 "trucks": 12,
                 "speed": 10,
                 "burn_rate": 350,
-                "cost": 80000000,
-                "residual_value": 2000000
+                "cost": 750000,
+                "residual_value": 100000
             }
         ]
     },

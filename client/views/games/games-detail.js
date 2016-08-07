@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('GamesDetailCtrl', ['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', function($scope, $state, Game, Utils, $uibModal, FerryClass) {
+.controller('GamesDetailCtrl', ['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Ferry', function($scope, $state, Game, Utils, $uibModal, FerryClass, Ferry) {
     if(!Utils.userLoggedIn()) {
         $state.go('login');
     }
@@ -11,6 +11,14 @@ angular.module('py-ferry')
     FerryClass.list()
        .then(function(response) {
           $scope.ferryClasses = response; 
+       })
+       .catch(function(error) {
+           console.error(error);
+       });
+     
+    Ferry.list(gameId)
+        .then(function(response) {
+          $scope.ferries = response; 
        })
        .catch(function(error) {
            console.error(error);
@@ -39,13 +47,15 @@ angular.module('py-ferry')
                ferryClasses: function() {
                    console.log($scope.ferryClasses);
                    return $scope.ferryClasses;
+               },
+               gameId: function() {
+                   return gameId;
                }
            }
         });
         
-        modalInstance.result.then(function (selectedItem) {
-          $scope.selected = selectedItem;
-        }, function () {
+        modalInstance.result.then(function() {
+        }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
     }
