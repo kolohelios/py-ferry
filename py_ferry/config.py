@@ -7,6 +7,7 @@ class DevelopmentConfig(object):
     SECRET_KEY = os.environ.get('BLOGFUL_SECRET_KEY', os.urandom(12))
     JWT_AUTH_URL_RULE = '/api/auth'
     JWT_EXPIRATION_DELTA = timedelta(days=7)
+    JWT_AUTH_USERNAME_KEY = 'name'
 
 class TestingConfig(object):
     DATABASE_URI = "postgresql://ubuntu:thinkful@localhost:5432/py-ferry-test"
@@ -14,6 +15,7 @@ class TestingConfig(object):
     SECRET_KEY = 'Not secret'
     JWT_AUTH_URL_RULE = '/api/auth'
     JWT_EXPIRATION_DELTA = timedelta(days=7)
+    JWT_AUTH_USERNAME_KEY = 'name'
     
 class TravisConfig(object):
     DATABASE_URI = "postgresql://localhost:5432/py-ferry-test"
@@ -21,3 +23,4 @@ class TravisConfig(object):
     SECRET_KEY = 'Not secret'
     JWT_AUTH_URL_RULE = '/api/auth'
     JWT_EXPIRATION_DELTA = timedelta(days=7)
+    JWT_AUTH_USERNAME_KEY = 'name'

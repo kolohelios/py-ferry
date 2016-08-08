@@ -7,12 +7,22 @@ angular.module('py-ferry')
     
     $scope.login = function() {
         User.login($scope.player)
-        .then(function(response) {
-            $state.go('gamesList');
-        })
-        .catch(function(error){
-            console.error(error);
-        });
+            .then(function(response) {
+                $state.go('gamesList');
+            })
+            .catch(function(error){
+                console.error(error);
+            });
+    }
+    
+    $scope.register = function() {
+        User.register($scope.player)
+            .then(function(response) {
+                $state.go('login');
+            })
+            .catch(function(error){
+                console.error(error);
+            });
     }
     
     $scope.checkPassword = function() {

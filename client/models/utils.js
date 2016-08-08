@@ -5,18 +5,22 @@ angular.module('py-ferry')
   function Utils() {}
 
   Utils.userLoggedIn = function() {
+    var d = $q.defer();
     if(User.user.id && User.user.id > 0) {
-        return true;
+        d.resolve(true);
     } else if(!User.checkedLocalStorage) {
       User.checkedLocalStorage = true;
       User.checkTokenFromLocalStorage()
       .then(function(response) {
+        d.resolve(true);
         console.log(response);
       })
       .catch(function(error) {
+        d.reject(error);
         console.error(error);
       });
     }
+    return d.promise;
   };
   
   return Utils;

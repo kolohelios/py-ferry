@@ -35,6 +35,24 @@ angular.module('py-ferry')
     return d.promise;
   };
   
+  User.register = function(data) {
+    var self = this;
+     
+    var d = $q.defer();
+    $http({
+      method: 'POST',
+      url: apiUrl + '/register',
+      data: data
+    })
+    .then(function(response) {
+      d.resolve();
+    })
+    .catch(function(error) {
+      d.reject(error);
+    });
+    return d.promise;
+  }
+  
   User.getUser = function() {
       return $http({
       method: 'GET',
