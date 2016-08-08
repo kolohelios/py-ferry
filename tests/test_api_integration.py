@@ -43,9 +43,9 @@ class TestAPI(unittest.TestCase):
         # Remove the tables and their data from the database
         Base.metadata.drop_all(engine)
         
-    def get_jwt(self, username, password):
+    def get_jwt(self, name, password):
         data = {
-            "username": username,
+            "name": name,
             "password": password
         }
             
@@ -132,7 +132,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('ascii'))
         self.assertEqual(data['status'], 'Error')
         self.assertEqual(data['data'], None)
-        self.assertEqual(data['message'], 'This user is already registered.')
+        self.assertEqual(data['message'], 'This email address is already being used.')
         
     def test_register_already_exists_name(self):
         ''' test the user registration endpoint of the API where the user
@@ -163,7 +163,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('ascii'))
         self.assertEqual(data['status'], 'Error')
         self.assertEqual(data['data'], None)
-        self.assertEqual(data['message'], 'This user is already registered.')
+        self.assertEqual(data['message'], 'This username is already being used.')
         
     def test_login(self):
         ''' test a successful login '''
@@ -176,7 +176,7 @@ class TestAPI(unittest.TestCase):
         session.commit()
         
         data = {
-            "username": "BestBureaucrat",
+            "name": "BestBureaucrat",
             "password": "notsecret"
         }
         

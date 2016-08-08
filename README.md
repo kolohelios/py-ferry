@@ -10,6 +10,7 @@ There are some images in the /notes folder that are photos that were taken from 
 These are more major issues that aren't related to a specific method, function, or property.
 
 * Trucks take up truck (tall spaces) as well as car spaces but that is not currently reflected in capacity calculations for sailings.
+* Add spinning up instructions to this file.
 
 ## Sidelines
 

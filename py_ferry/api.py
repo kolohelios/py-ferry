@@ -4,7 +4,7 @@ import json
 # TODO consider replacing the use of the json library with jsonify
 from flask import request, Response, url_for, send_from_directory
 from flask_jwt import JWT, jwt_required, current_identity
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from jsonschema import validate, ValidationError
 
 from . import decorators
@@ -25,26 +25,33 @@ def identity(payload):
 jwt = JWT(app, authenticate, identity)
 
 @app.route('/api/register', methods = ['POST'])
+@decorators.require('application/json')
 def register():
     json_data = request.json
-    user = database.User(
-        email = json_data['email'],
-        password = json_data['password'],
-        name = json_data['name']
-    )
-    # TODO should probably invert this logic so we fail and bail and also DRY out the repetitive last two lines of the try and except blocks
-    # TODO need to differntiate between registration failures because the email address already exists and failures because the name already exists
-    try:
-        session.add(user)
-        session.commit()
-        message = None
-        data = json.dumps({ 'status': 'Success', 'data': None, 'message': message })
-        return Response(data, 201, mimetype = 'application/json')
-    except:
-        message = 'This user is already registered.'
+    
+    users = session.query(database.User).filter(database.User.name == json_data['name'])
+    if users.count():
+        message = 'This username is already being used.'
         data = json.dumps({ 'status': 'Error', 'data': None, 'message': message })
         return Response(data, 409, mimetype = 'application/json')
-
+    users = session.query(database.User).filter(database.User.email == json_data['email'])
+    if users.count():
+        message = 'This email address is already being used.'
+        data = json.dumps({ 'status': 'Error', 'data': None, 'message': message })
+        return Response(data, 409, mimetype = 'application/json')
+    
+    user = database.User(
+        email = json_data['email'],
+        password = generate_password_hash(json_data['password']),
+        name = json_data['name']
+    )
+    
+    session.add(user)
+    session.commit()
+    message = None
+    data = json.dumps({ 'status': 'Success', 'data': None, 'message': message })
+    return Response(data, 201, mimetype = 'application/json')
+        
 @app.route('/api/user')
 @jwt_required()
 def get_identity_with_token():

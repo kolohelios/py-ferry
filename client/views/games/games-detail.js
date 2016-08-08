@@ -5,42 +5,51 @@ angular.module('py-ferry')
 ['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry',
 function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
     
+    $scope.oneAtATime = true;
+    
     var gameId = $state.params.gameId;
     
-    FerryClass.list()
-       .then(function(response) {
-          $scope.ferryClasses = response; 
-       })
-       .catch(function(error) {
-           console.error(error);
-       });
-       
-    Terminal.list()
-        .then(function(response) {
-          $scope.terminals = response; 
-       })
-       .catch(function(error) {
-           console.error(error);
-       });
-     
-    Ferry.list(gameId)
-        .then(function(response) {
-          $scope.ferries = response; 
-       })
-       .catch(function(error) {
-           console.error(error);
-       });
+    Utils.userLoggedIn()
+    .then(function() {
+        // player is loaded
+        FerryClass.list()
+           .then(function(response) {
+              $scope.ferryClasses = response; 
+           })
+        Terminal.list()
+            .then(function(response) {
+              $scope.terminals = response; 
+           })
+           .catch(function(error) {
+               console.error(error);
+           });
+         
+        Ferry.list(gameId)
+            .then(function(response) {
+              $scope.ferries = response; 
+           })
+           .catch(function(error) {
+               console.error(error);
+           });
+           
+       Game.fetch(gameId)
+            .then(function(response) {
+                $scope.game = response.data;
+            })
+            .catch(function(error){
+                console.error(error);
+                console.log(error);
+            });
+    })
+    .catch(function(error) {
+       console.error(error);
+       $state.go('login');
+    });
+
+    
+    
     
     $scope.animationsEnabled = true;
-    
-    Game.fetch(gameId)
-    .then(function(response) {
-        $scope.game = response.data;
-    })
-    .catch(function(error){
-        console.error(error);
-        console.log(error);
-    });
     
     $scope.ferry = {};
     

@@ -1,8 +1,8 @@
-#games.container
+#games.container.games-detail
     .row
         .col-xs-12.col-sm-5
             p image here
-        .col-xs-12.col-sm-7.col-md-4
+        .col-xs-12.col-sm-7
             .row
                 .col-xs-5.col-xs-offset-5
                     h3 Ferries
@@ -14,8 +14,10 @@
                     a.btn.btn-default(href="" ng-click="open('sm')") Maintenance
                     a.btn.btn-default(href="") Staffing
                 .col-xs-6.col-sm-7
-                     .panel.panel-default
-                        p {{ferries}}
+                    div(uib-accordion close-others="oneAtATime" style="width: 100%;")
+                        div.panel-default(uib-accordion-group ng-repeat="ferry in ferries")
+                            div(uib-accordion-heading) {{ferry.name}}
+                            p Class: {{ferry.ferry_class.name}}
             .row
                 .col-xs-5.col-xs-offset-5
                     h3 Routes
