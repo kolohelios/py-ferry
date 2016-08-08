@@ -6,6 +6,7 @@ Werkzeug
 itsdangerous
 jsonschema
 nose
+splinter
 psycopg2
 flask-JWT
 flask-script
