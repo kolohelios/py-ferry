@@ -2,8 +2,8 @@
 
 angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
-['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry',
-function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route) {
     
     $scope.oneAtATime = true;
     
@@ -32,22 +32,27 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
                console.error(error);
            });
            
-       Game.fetch(gameId)
+        Game.fetch(gameId)
             .then(function(response) {
                 $scope.game = response.data;
+                console.log($scope.game);
             })
             .catch(function(error){
                 console.error(error);
-                console.log(error);
+            });
+            
+        Route.list(gameId)
+            .then(function(response) {
+                $scope.routes = response;
+            })
+            .catch(function(error){
+                console.error(error);
             });
     })
     .catch(function(error) {
        console.error(error);
        $state.go('login');
     });
-
-    
-    
     
     $scope.animationsEnabled = true;
     
@@ -64,8 +69,9 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
                    console.log($scope.ferryClasses);
                    return $scope.ferryClasses;
                },
-               gameId: function() {
-                   return gameId;
+               game: function() {
+                   console.log($scope.game);
+                   return $scope.game;
                }
            }
         });
@@ -88,6 +94,10 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry) {
                terminals: function() {
                    console.log($scope.terminals);
                    return $scope.terminals;
+               },
+               game: function() {
+                   console.log($scope.game);
+                   return $scope.game;
                }
            }
         });

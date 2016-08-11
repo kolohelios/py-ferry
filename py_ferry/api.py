@@ -157,7 +157,7 @@ def games_new():
     session.commit()
     
     data = json.dumps(game.as_dictionary())
-    return Response(data, 200, mimetype = 'application/json')
+    return Response(data, 201, mimetype = 'application/json')
     
 @app.route('/api/games', methods = ['GET'])
 @jwt_required()
@@ -221,6 +221,32 @@ def routes_get(game_id):
     data = json.dumps([route.as_dictionary() for route in routes])
     return Response(data, 200, mimetype = 'application/json')
     
+@app.route('/api/games/<int:game_id>/routes', methods = ['POST'])
+@jwt_required()
+@decorators.accept('application/json')
+@decorators.require('application/json')
+def routes_create(game_id):
+    ''' create a route for a player's game '''
+
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_identity:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+        
+    json_data = request.json
+    
+    first_terminal = session.query(database.Terminal).get(json_data['terminal1Id'])
+    second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])
+    
+    route = database.Route(first_terminal = first_terminal, second_terminal = second_terminal, game = game)
+    
+    session.add(route)
+    session.commit()
+
+    data = json.dumps(route.as_dictionary())
+    return Response(data, 201, mimetype = 'application/json')    
+
 @app.route('/api/games/<int:game_id>/endturn', methods = ['GET'])
 @jwt_required()
 @decorators.accept('application/json')

@@ -26,7 +26,7 @@ angular.module('py-ferry')
   Game.fetch = function(gameId) {
     return $http({
       method: 'GET',
-      url: apiUrl + '/game/' + gameId
+      url: apiUrl + '/games/' + gameId
     });
   };
   

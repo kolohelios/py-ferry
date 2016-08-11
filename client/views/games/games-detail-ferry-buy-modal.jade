@@ -3,7 +3,7 @@
         h3.modal-title Buy a Ferry
         a.pull-right(href="" ng-click="cancel()" style="margin-top: -25px;") X
     .modal-body
-        span.ferry-class-div(ng-repeat="ferryClass in ferryClasses" ng-click="selectFerryClass(ferryClass.id)" ng-class="{ selected: ferry.classId == ferryClass.id }")
+        span.ferry-class-div(ng-repeat="ferryClass in ferryClasses" ng-click="selectFerryClass(ferryClass)" ng-class="{ selected: ferry.classId == ferryClass.id, disabled: ferryClass.cost > game.cash_available }")
             h5(ng-bind="ferryClass.name")
             i.fa.fa-users
             span(ng-bind="ferryClass.passengers | number : 0")
