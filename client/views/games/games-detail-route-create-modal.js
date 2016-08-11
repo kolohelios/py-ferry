@@ -1,24 +1,22 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('GamesDetailRouteCreateModalInstanceCtrl', ['$scope', '$uibModalInstance', 'terminals', 'Ferry', function ($scope, $uibModalInstance, terminals, Ferry) {
+.controller('GamesDetailRouteCreateModalInstanceCtrl', ['$scope', '$uibModalInstance', 'terminals', 'game', 'Route', function ($scope, $uibModalInstance, terminals, game, Route) {
 
   $scope.terminals = terminals;
+  $scope.game = game;
+  
   $scope.route = {};
   
-//   $scope.selectFerryClass = function(classId) {
-//     $scope.ferry.classId = classId;
-//   };
-
-//   $scope.buy = function () {
-//     Ferry.buy(gameId, $scope.ferry)
-//     .then(function(response) {
-//       $uibModalInstance.close();
-//     })
-//     .catch(function(error) {
-//       console.error(error);
-//     });
-//   };
+  $scope.create = function () {
+    Route.create(game.id, $scope.route)
+    .then(function(response) {
+      $uibModalInstance.close();
+    })
+    .catch(function(error) {
+      console.error(error);
+    });
+  };
 
   $scope.cancel = function () {
     $uibModalInstance.dismiss('cancel');

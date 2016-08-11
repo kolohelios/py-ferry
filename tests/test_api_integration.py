@@ -381,7 +381,7 @@ class TestAPI(unittest.TestCase):
             ]
         )
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
@@ -617,9 +617,46 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode('ascii'))
         self.assertEqual(len(data), 0)
         
+    def test_post_route(self):
+        ''' create a new route for the current game '''
+        
+        # create terminals
+        seattle = database.Terminal(name = 'Seattle', lat = 47.6025001, lon = -122.33857590000002, passenger_pool = 13000, car_pool = 2000, truck_pool = 300)
+        bainbridge_island = database.Terminal(name = 'Bainbridge Island', lat = 47.623089, lon = -122.511171, passenger_pool = 13000, car_pool = 2000, truck_pool = 300)
+        
+        pw = 'notsecret'
+        bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
+        
+        game = database.Game(player = bob)
+        
+        session.add_all([seattle, bainbridge_island, bob, game])
+        session.commit()
+        
+        data = {
+            "terminal1Id": seattle.id,
+            "terminal2Id": bainbridge_island.id
+        }
+        
+        token = self.get_jwt(bob.name, pw)
+        
+        response = self.client.post('/api/games/' + str(game.id) + '/routes',
+        data = json.dumps(data),
+            content_type = 'application/json',
+            headers = [
+                ('Accept', 'application/json'),
+                ('Authorization', 'JWT ' + token)
+            ]
+        )
+        
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.mimetype, 'application/json')
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(len(data), 7)
+        
     def test_get_routes(self):
-        ''' get a new game for the current user '''
-        # self.simulate_login()
+        ''' get all the routes for a player's game '''
+        
         pw = 'notsecret'
         bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         

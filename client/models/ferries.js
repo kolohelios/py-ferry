@@ -23,21 +23,17 @@ angular.module('py-ferry')
   
   Ferry.list = function(gameId) {
     var d = $q.defer();
-    var self = this;
-    // if(this.ferries.length) {
-    //     d.resolve(this.ferries);
-    // } else {
-        $http({
-          method: 'GET',
-          url: apiUrl + '/games/' + gameId + '/ferries'
-        })
-        .then(function(response) {
-            d.resolve(response.data);
-        })
-        .catch(function(error) {
-            d.reject(error);
-        });
-        return d.promise;
+      $http({
+        method: 'GET',
+        url: apiUrl + '/games/' + gameId + '/ferries'
+      })
+      .then(function(response) {
+          d.resolve(response.data);
+      })
+      .catch(function(error) {
+          d.reject(error);
+      });
+      return d.promise;
     }
 
   return Ferry;

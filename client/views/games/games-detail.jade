@@ -27,6 +27,8 @@
                     a.btn.btn-default(href="" ng-click="route.create()") Create Route
                     a.btn.btn-default(href="" ng-click="ferry.sell()") Edit Route
                 .col-xs-6.col-sm-7
-                     .panel.panel-default
-                        p {{routes}}
+                    div(uib-accordion close-others="oneAtATime" style="width: 100%;")
+                        div.panel-default(uib-accordion-group ng-repeat="route in routes")
+                            div(uib-accordion-heading) test
+                            p {{route.first_terminal.name}} – {{route.second_terminal.name}}
         
