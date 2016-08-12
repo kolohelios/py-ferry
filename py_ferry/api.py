@@ -239,7 +239,12 @@ def routes_create(game_id):
     first_terminal = session.query(database.Terminal).get(json_data['terminal1Id'])
     second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])
     
-    route = database.Route(first_terminal = first_terminal, second_terminal = second_terminal, game = game)
+    ferries = []
+    for ferry in json_data['ferries']:
+        ferry = session.query(database.Ferry).get(ferry)
+        ferries.append(ferry)
+    
+    route = database.Route(first_terminal = first_terminal, second_terminal = second_terminal, game = game, ferries = ferries)
     
     session.add(route)
     session.commit()
@@ -263,12 +268,20 @@ def games_endturn(game_id):
     
     routes_results = []
     # TODO there's got to be a better way to map an existing record to a new record
+    
+    total_fuel = 0
+    total_revenue = 0
+    
     for route in routes:
         weekly_results = models.Sailings().weekly_crossings(
             route, game.current_week, game.current_year
         )
         ferry_results = []
         for weekly_result in weekly_results:
+            total_fuel += weekly_result['results']['fuel_used']
+            total_revenue += weekly_result['results']['total_passengers'] * route.passenger_fare
+            total_revenue += weekly_result['results']['total_cars'] * route.car_fare
+            total_revenue += weekly_result['results']['total_trucks'] * route.truck_fare
             ferry_result = database.Ferry_Result(
                 fuel_used = weekly_result['results']['fuel_used'],
                 total_passengers = weekly_result['results']['total_passengers'],
@@ -299,6 +312,9 @@ def games_endturn(game_id):
     session.add(turn_result)
     
     game.current_week += 1
+    print(total_fuel)
+    print(total_revenue)
+    game.cash_available += total_revenue - total_fuel * models.Fuel().cost_per_gallon()
     
     session.commit()
 

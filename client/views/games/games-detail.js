@@ -56,6 +56,10 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     
     $scope.animationsEnabled = true;
     
+    $scope.endTurn = function() {
+        Game.endTurn(gameId);  
+    };
+    
     $scope.ferry = {};
     
     $scope.ferry.buy = function() {
@@ -76,7 +80,8 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            }
         });
         
-        modalInstance.result.then(function() {
+        modalInstance.result.then(function(ferry) {
+            $scope.ferries.push(ferry);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
@@ -98,6 +103,10 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                game: function() {
                    console.log($scope.game);
                    return $scope.game;
+               },
+               ferries: function() {
+                   console.log($scope.game);
+                   return $scope.ferries;
                }
            }
         });

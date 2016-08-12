@@ -13,9 +13,12 @@
                 .form-group
                     select(ng-model="route.terminal2Id")
                         option(value="{{terminal.id}}" ng-repeat="terminal in terminals" ng-bind="terminal.name")
-        // .form-group(style="clear: both; padding-top: 50px;")
-        //     label(for="name") Name
-        //     input(type="text" id="name" ng-model="ferry.name" placeholder="Name")
+        .row
+            .col-xs-12
+                .form-group
+                    div(ng-repeat="ferry in ferries")
+                        label(ng-bind="ferry.name")
+                        input.checkbox(type="checkbox" ng-model="route.ferries[ferry.id]")
     .modal-footer
         button.btn.btn-default(ng-click="create()") Create
         button.btn.btn-default(ng-click="cancel()") Cancel

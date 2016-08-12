@@ -59,6 +59,21 @@ angular.module('py-ferry')
         return Error;
     });
   };
+  
+  Game.endTurn = function(gameId) {
+    var d = $q.defer();
+    $http({
+      method: 'GET',
+      url: apiUrl + '/games/' + gameId + '/endturn'
+    })
+    .then(function(response) {
+        d.resolve(response.data);
+    })
+    .catch(function(error) {
+        d.reject(error);
+    });
+    return d.promise;
+  };
 
   return Game;
 }]);
