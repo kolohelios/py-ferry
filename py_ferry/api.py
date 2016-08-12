@@ -239,6 +239,11 @@ def routes_create(game_id):
     first_terminal = session.query(database.Terminal).get(json_data['terminal1Id'])
     second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])
     
+    ferries = []
+    for ferry in json_data['ferries']:
+        ferry = session.query(database.Ferry).get(ferry)
+        ferries.append(ferry)
+    
     route = database.Route(first_terminal = first_terminal, second_terminal = second_terminal, game = game)
     
     session.add(route)

@@ -627,14 +627,45 @@ class TestAPI(unittest.TestCase):
         pw = 'notsecret'
         bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         
+        ferry_class_props = { 
+            'name': 'Jumbo Mark II',
+            'passengers': 2500,
+            'cars': 202,
+            'trucks': 60,
+            'speed': 21,
+            'burn_rate': 350,
+            'turnover_time': 0.2,
+            'cost': 50000000
+        }
+        
+        ferry_class_A = database.Ferry_Class(
+            name = ferry_class_props['name'],
+            passengers = ferry_class_props['passengers'],
+            cars = ferry_class_props['cars'],
+            trucks = ferry_class_props['trucks'],
+            speed = ferry_class_props['speed'],
+            burn_rate = ferry_class_props['burn_rate'],
+            turnover_time = ferry_class_props['turnover_time'],
+            cost = ferry_class_props['cost'],
+        )
+        
         game = database.Game(player = bob)
         
-        session.add_all([seattle, bainbridge_island, bob, game])
+        ferry = database.Ferry(
+            ferry_class = ferry_class_A,
+            game = game,
+            name = 'M/V Minnow'
+        )
+        
+        session.add_all([seattle, bainbridge_island, bob, game, ferry_class_A, ferry])
         session.commit()
         
         data = {
             "terminal1Id": seattle.id,
-            "terminal2Id": bainbridge_island.id
+            "terminal2Id": bainbridge_island.id,
+            "ferries": [
+                ferry.id
+            ]
         }
         
         token = self.get_jwt(bob.name, pw)

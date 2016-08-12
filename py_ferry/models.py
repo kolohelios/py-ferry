@@ -88,6 +88,7 @@ class Passenger(object):
         self.growth_rate = 1.025
 
     def route_passenger_demand(self, passengers, hour, day, week, year):
+        print(passengers)
         week_floor = math.floor(week / 4) * 4 + 1
         base_demand = self.day_demand[day][hour] * self.week_demand[week_floor]
         offset_years = year - self.base_year
