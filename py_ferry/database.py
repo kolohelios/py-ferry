@@ -177,9 +177,9 @@ class Route(Base):
         return vincenty(place_A, place_B).nm * ROUTE_ARC_MULTIPLER # in nautical miles
     
     id = Column(Integer, primary_key = True)
-    passenger_fare = Column(Float)
-    car_fare = Column(Float)
-    truck_fare = Column(Float)
+    passenger_fare = Column(Float, default = 0)
+    car_fare = Column(Float, default = 0)
+    truck_fare = Column(Float, default = 0)
     
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     second_terminal_id = Column(Integer, ForeignKey('terminals.id'))

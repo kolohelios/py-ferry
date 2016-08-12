@@ -18,7 +18,7 @@ angular.module('py-ferry')
   $scope.buy = function () {
     Ferry.buy(game.id, $scope.ferry)
     .then(function(response) {
-      $uibModalInstance.close();
+      $uibModalInstance.close(response.data);
     })
     .catch(function(error) {
       console.error(error);

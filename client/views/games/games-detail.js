@@ -80,7 +80,8 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            }
         });
         
-        modalInstance.result.then(function() {
+        modalInstance.result.then(function(ferry) {
+            $scope.ferries.push(ferry);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });

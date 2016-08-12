@@ -8,6 +8,7 @@
                 "cars": 202,
                 "trucks": 60,
                 "speed": 18,
+                "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -18,6 +19,7 @@
                 "cars": 188,
                 "trucks": 60,
                 "speed": 18,
+                "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -28,6 +30,7 @@
                 "cars": 144,
                 "trucks": 30,
                 "speed": 20,
+                "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -38,6 +41,7 @@
                 "cars": 144,
                 "trucks": 34,
                 "speed": 17,
+                "turnover_time": 11,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -48,6 +52,7 @@
                 "cars": 124,
                 "trucks": 26,
                 "speed": 16,
+                "turnover_time": 10,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -58,6 +63,7 @@
                 "cars": 87,
                 "trucks": 30,
                 "speed": 13,
+                "turnover_time": 8,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -68,6 +74,7 @@
                 "cars": 64,
                 "trucks": 9,
                 "speed": 15,
+                "turnover_time": 8,
                 "burn_rate": 350,
                 "cost": 80000000,
                 "residual_value": 2000000
@@ -78,6 +85,7 @@
                 "cars": 34,
                 "trucks": 12,
                 "speed": 10,
+                "turnover_time": 6,
                 "burn_rate": 350,
                 "cost": 750000,
                 "residual_value": 100000
