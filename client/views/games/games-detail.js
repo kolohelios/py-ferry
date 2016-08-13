@@ -34,8 +34,11 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            
         Game.fetch(gameId)
             .then(function(response) {
-                $scope.game = response.data;
-                console.log($scope.game);
+                $scope.game = Game.activeGame;
+                $scope.game = function() {
+                    return Game.getActiveGame();
+                  };
+                console.log($scope.game());
             })
             .catch(function(error){
                 console.error(error);
@@ -75,7 +78,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                },
                game: function() {
                    console.log($scope.game);
-                   return $scope.game;
+                   return $scope.game();
                }
            }
         });
@@ -102,7 +105,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                },
                game: function() {
                    console.log($scope.game);
-                   return $scope.game;
+                   return $scope.game();
                },
                ferries: function() {
                    console.log($scope.game);
@@ -111,9 +114,16 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            }
         });
         
-        modalInstance.result.then(function() {
+        modalInstance.result.then(function(route) {
+            $scope.routes.push(route);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
     }
+    
+    $scope.$on('$locationChangeStart', function( event, newUrl ) {
+      if (newUrl.indexOf('/games/') == -1) {
+        Game.activeGame = {};
+      }
+    });
 }]);

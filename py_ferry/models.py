@@ -210,18 +210,19 @@ class Sailings(object):
     def daily_crossings(self, route, day, week, year):
         accumulations = []
         for ferry in route.ferries:
-            schedule = Schedule().build_schedule(route, ferry, day)
-            accumulations.append({
-                'ferry': ferry,
-                'schedule': schedule,
-                'results': {
-                    'total_passengers': 0,
-                    'total_cars': 0,
-                    'total_trucks': 0,
-                    'total_sailings': len(schedule),
-                    'total_hours': Schedule().hours_of_operations(day),
-                    }
-                })
+            if ferry.active == True:
+                schedule = Schedule().build_schedule(route, ferry, day)
+                accumulations.append({
+                    'ferry': ferry,
+                    'schedule': schedule,
+                    'results': {
+                        'total_passengers': 0,
+                        'total_cars': 0,
+                        'total_trucks': 0,
+                        'total_sailings': len(schedule),
+                        'total_hours': Schedule().hours_of_operations(day),
+                        }
+                    })
         # TODO all these declarations and the repition of the queue code smells
         first_terminal_queue = {
             'passengers': 0,
@@ -270,17 +271,18 @@ class Sailings(object):
     def weekly_crossings(self, route, week, year):
         accumulations = []
         for ferry in route.ferries:
-            accumulations.append({
-                'ferry': ferry,
-                'results': {
-                    'total_passengers': 0,
-                    'total_cars': 0,
-                    'total_trucks': 0,
-                    'total_sailings': 0,
-                    'total_hours': 0,
-                    'fuel_used': 0,
-                    }
-                })
+            if ferry.active == True:
+                accumulations.append({
+                    'ferry': ferry,
+                    'results': {
+                        'total_passengers': 0,
+                        'total_cars': 0,
+                        'total_trucks': 0,
+                        'total_sailings': 0,
+                        'total_hours': 0,
+                        'fuel_used': 0,
+                        }
+                    })
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         
         for day in days:

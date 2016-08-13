@@ -26,6 +26,7 @@ class Ferry(object):
     def __init__(self, ferry_class, name):
         self.ferry_class = ferry_class
         self.name = name
+        self.active = True
 
 class Route(object):
     def __init__(self, first_terminal, second_terminal, ferries, passenger_fare, car_fare, truck_fare):

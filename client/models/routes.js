@@ -5,18 +5,26 @@ angular.module('py-ferry')
   function Route() {}
   
     Route.create = function(gameId, data) {
-        return $http({
+        var d = $q.defer();
+        $http({
           method: 'POST',
           url: apiUrl + '/games/' + gameId + '/routes',
           data: data
+        })
+        .then(function(response) {
+            d.resolve(response.data);
+        })
+        .catch(function(error) {
+            d.reject(error);
         });
+        return d.promise;
     };
   
     Route.list = function(gameId) {
         var d = $q.defer();
         $http({
-        method: 'GET',
-        url: apiUrl + '/games/' + gameId + '/routes'
+          method: 'GET',
+          url: apiUrl + '/games/' + gameId + '/routes'
         })
         .then(function(response) {
             d.resolve(response.data);

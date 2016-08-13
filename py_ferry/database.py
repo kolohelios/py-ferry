@@ -90,6 +90,7 @@ class Ferry(Base):
             "name": self.name,
             "ferry_class": self.ferry_class.as_dictionary(),
             "launched": self.launched,
+            "active": self.active,
         }
     
     def depreciated_value(self, year):
@@ -99,6 +100,7 @@ class Ferry(Base):
         return self.ferry_class.residual_value - self.ferry_class.cost * age / self.ferry_class.usable_life
         
     id = Column(Integer, primary_key = True)
+    active = Column(Boolean, default = True)
     name = Column(String(64))
     launched = Column(DateTime)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)

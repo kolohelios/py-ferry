@@ -19,6 +19,20 @@
                     div(ng-repeat="ferry in ferries")
                         label(ng-bind="ferry.name")
                         input.checkbox(type="checkbox" ng-model="route.ferries[ferry.id]")
+        .row
+            .col-xs-4
+                .form-group
+                    label(for="passenger") Passenger Fare
+                    input(type="currency" id="passenger" ng-model="route.passenger_fare") 
+            .col-xs-4
+                .form-group
+                    label(for="car") Car Fare
+                    input(type="currency" id="car" ng-model="route.car_fare")
+            .col-xs-4
+                .form-group
+                    label(for="truck") Truck Fare
+                    input(type="currency" id="truck" ng-model="route.truck_fare")
+                
     .modal-footer
         button.btn.btn-default(ng-click="create()") Create
         button.btn.btn-default(ng-click="cancel()") Cancel
