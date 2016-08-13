@@ -1,14 +1,16 @@
 'use strict';
 
 angular.module('py-ferry')
-.controller('NavCtrl', ['$scope', '$state', 'User', 'Utils', function($scope, $state, User, Utils) {
-  
-  // Utils.userLoggedIn();
+.controller('NavCtrl', ['$scope', '$state', 'User', 'Utils', 'Game', function($scope, $state, User, Utils, Game) {
   
   $scope.logout = function() {
     User.logout();
     $state.go('login');
   }
+ 
+  $scope.game = function() {
+    return Game.getActiveGame();
+  };
   
   $scope.isCollapsed = true;
 

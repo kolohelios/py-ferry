@@ -531,7 +531,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 4)
+        self.assertEqual(len(data), 5)
         
     def test_ferry_post_insufficient_funds(self):
         ''' test the purchasing of a ferry when player doesn't have enough available cash '''
@@ -663,6 +663,9 @@ class TestAPI(unittest.TestCase):
         data = {
             "terminal1Id": seattle.id,
             "terminal2Id": bainbridge_island.id,
+            "passenger_fare": 8.50,
+            "car_fare": 18,
+            "truck_fare": 48,
             "ferries": [
                 ferry.id
             ]
@@ -783,7 +786,11 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(data['message'], 'success')
+        self.assertEqual(len(data), 8)
+        
+        data = json.loads(response.data.decode('ascii'))
+        self.assertEqual(data['current_week'], 2)
+        self.assertEqual(data['current_year'], 2000)
 
         response = self.client.get('/api/games/' + str(game.id),
             headers = [

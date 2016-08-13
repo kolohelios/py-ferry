@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('py-ferry')
-.factory('Ferry', ['$http', '$window', '$q', 'apiUrl', '_', function($http, $window, $q, apiUrl, _) {
+.factory('Ferry', ['$http', '$window', '$q', 'apiUrl', '_', '$rootScope', function($http, $window, $q, apiUrl, _, $rootScope) {
   function Ferry() {}
   
   Ferry.buy = function(gameId, data) {
@@ -13,7 +13,8 @@ angular.module('py-ferry')
       data: data
     })
     .then(function(response) {
-        d.resolve(response);
+        $rootScope.$emit('updateGame', gameId);
+        d.resolve(response.data);
     })
     .catch(function(error) {
         d.reject(error);

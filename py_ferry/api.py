@@ -244,13 +244,24 @@ def routes_create(game_id):
         ferry = session.query(database.Ferry).get(ferry)
         ferries.append(ferry)
     
-    route = database.Route(first_terminal = first_terminal, second_terminal = second_terminal, game = game, ferries = ferries)
+    route = database.Route(
+        first_terminal = first_terminal, second_terminal = second_terminal, 
+        game = game, ferries = ferries, passenger_fare = json_data['passenger_fare'],
+        car_fare = json_data['car_fare'], truck_fare = json_data['truck_fare']
+    )
     
-    session.add(route)
-    session.commit()
+    # HACK we should add formal JSON validation to replace this try...expect block
+    try:
+        session.add(route)
+        session.commit()
+        data = json.dumps(route.as_dictionary())
+        return Response(data, 201, mimetype = 'application/json')    
+    except:
+        session.rollback();
+        data = json.dumps({"status": "failure"})
+        return Response(data, 400, mimetype = 'application/json')
 
-    data = json.dumps(route.as_dictionary())
-    return Response(data, 201, mimetype = 'application/json')    
+    
 
 @app.route('/api/games/<int:game_id>/endturn', methods = ['GET'])
 @jwt_required()
@@ -311,14 +322,16 @@ def games_endturn(game_id):
     
     session.add(turn_result)
     
-    game.current_week += 1
-    print(total_fuel)
-    print(total_revenue)
+    if(game.current_week >= 51):
+        game.current_week = 1
+        game.current_year += 1
+    else:
+        game.current_week += 1
     game.cash_available += total_revenue - total_fuel * models.Fuel().cost_per_gallon()
     
     session.commit()
 
-    data = json.dumps({'message': 'success'})
+    data = json.dumps(game.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     
 @app.route('/api/games/<int:game_id>/turn-results/<int:week_number>', methods = ['GET'])

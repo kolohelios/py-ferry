@@ -1,10 +1,17 @@
 'use strict';
 
 angular.module('py-ferry')
-.factory('Game', ['$http', '$window', '$q', 'apiUrl', '_', function($http, $window, $q, apiUrl, _) {
+.factory('Game', ['$http', '$window', '$q', 'apiUrl', '_', '$rootScope', function($http, $window, $q, apiUrl, _, $rootScope) {
   function Game() {}
   
   Game.games = [];
+  Game.activeGame = {};
+  Game.gameId = 0;
+  
+  $rootScope.$on('updateGame', function(event, gameId) {
+    Game.activeGameId = gameId;
+    Game.fetch(gameId);
+  });
 
   Game.list = function() {
     var self = this;
@@ -24,10 +31,24 @@ angular.module('py-ferry')
   };
   
   Game.fetch = function(gameId) {
-    return $http({
+    var self = this;
+    var d = $q.defer();
+    $http({
       method: 'GET',
       url: apiUrl + '/games/' + gameId
+    })
+    .then(function(response) {
+      self.activeGame = response.data;
+      d.resolve(self.activeGame);
+    })
+    .catch(function(error) {
+      d.reject(error);
     });
+    return d.promise;
+  };
+  
+  Game.getActiveGame = function() {
+    return this.activeGame;
   };
   
   Game.createGame = function() {
@@ -61,13 +82,15 @@ angular.module('py-ferry')
   };
   
   Game.endTurn = function(gameId) {
+    var self = this;
     var d = $q.defer();
     $http({
       method: 'GET',
       url: apiUrl + '/games/' + gameId + '/endturn'
     })
     .then(function(response) {
-        d.resolve(response.data);
+        self.activeGame = response.data;
+        d.resolve(self.activeGame);
     })
     .catch(function(error) {
         d.reject(error);

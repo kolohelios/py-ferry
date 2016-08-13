@@ -86,7 +86,7 @@
                 "trucks": 12,
                 "speed": 10,
                 "turnover_time": 6,
-                "burn_rate": 350,
+                "burn_rate": 18,
                 "cost": 750000,
                 "residual_value": 100000
             }
