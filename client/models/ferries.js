@@ -27,8 +27,7 @@ angular.module('py-ferry')
     var d = $q.defer();
     $http({
       method: 'DELETE',
-      url: apiUrl + '/games/' + gameId + '/ferries/' + ferryId,
-      data: data
+      url: apiUrl + '/games/' + gameId + '/ferries/' + ferryId
     })
     .then(function(response) {
         $rootScope.$emit('updateGame', gameId);

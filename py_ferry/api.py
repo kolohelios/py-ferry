@@ -107,6 +107,31 @@ def ferries_get(game_id):
 
     data = json.dumps([ferry.as_dictionary() for ferry in ferries])
     return Response(data, 200, mimetype = 'application/json')
+    
+@app.route('/api/games/<int:game_id>/ferries/<int:ferry_id>', methods = ['DELETE'])
+@jwt_required()
+@decorators.accept('application/json')
+def ferries_sell(game_id, ferry_id):
+    ''' sell a ferry based on game and ferry IDs '''
+
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_identity:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+        
+    ferry = session.query(database.Ferry).get(ferry_id)
+    
+    if not ferry.game.id == game_id:
+        data = {'message': 'The ferry being sold does not match the game ID in the request.'}
+        return Response(data, 403, mimetype = 'application/json')
+    
+    ferry.active = False
+    
+    game.cash_available += ferry.depreciated_value(game.current_year)
+
+    data = json.dumps(ferry.as_dictionary())
+    return Response(data, 200, mimetype = 'application/json')
 
 @app.route('/api/games/<int:game_id>/ferries', methods = ['POST'])
 @jwt_required()

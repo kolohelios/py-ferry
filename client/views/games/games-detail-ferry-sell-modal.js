@@ -4,18 +4,20 @@ angular.module('py-ferry')
 .controller('GamesDetailFerrySellModalInstanceCtrl', ['$scope', '$uibModalInstance', 'game', 'ferries', 'Ferry', function ($scope, $uibModalInstance, game, ferries, Ferry) {
 
   $scope.game = game;
-//   $scope.ferry = {};
-  
-//   $scope.selectFerryClass = function(ferryClass) {
-//     if(ferryClass.cost > $scope.game.cash_available) {
-//       alert('Cannot afford this ferry.'); 
-//     } else {
-//       $scope.ferry.classId = ferryClass.id;  
-//     }
-//   };
+  $scope.ferries = ferries;
+  $scope.ferryId = -1;
 
-  $scope.sell = function (ferryId) {
-    Ferry.sell(game.id, ferryId)
+  $scope.selectFerry = function(ferryId) {
+    console.log($scope.ferryId, ferryId);
+    if($scope.ferryId == ferryId) {
+      $scope.ferryId = -1;
+    } else {
+      $scope.ferryId = ferryId;
+    }
+  };
+
+  $scope.sell = function() {
+    Ferry.sell(game.id, $scope.ferryId)
     .then(function(response) {
       $uibModalInstance.close(response);
     })
