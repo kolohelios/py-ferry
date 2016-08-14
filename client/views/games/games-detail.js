@@ -2,8 +2,8 @@
 
 angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
-['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route',
-function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route) {
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', '_',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, _) {
     
     $scope.oneAtATime = true;
     
@@ -85,6 +85,31 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         
         modalInstance.result.then(function(ferry) {
             $scope.ferries.push(ferry);
+        }, function() {
+          console.info('Modal dismissed at: ' + new Date());
+        });
+    }
+    
+    $scope.ferry.sell = function() {
+        var modalInstance = $uibModal.open({
+           animation: $scope.animationsEnabled,
+           templateUrl: 'views/games/games-detail-ferry-sell-modal.html',
+           controller: 'GamesDetailFerrySellModalInstanceCtrl',
+           size: 'md',
+           resolve: {
+               ferries: function() {
+                   console.log($scope.ferries);
+                   return $scope.ferries;
+               },
+               game: function() {
+                   console.log($scope.game);
+                   return $scope.game();
+               }
+           }
+        });
+        
+        modalInstance.result.then(function(ferryId) {
+            _.remove($scope.ferries, {id: ferryId});
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });

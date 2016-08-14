@@ -89,20 +89,19 @@ class Ferry(Base):
             "id": self.id,
             "name": self.name,
             "ferry_class": self.ferry_class.as_dictionary(),
+            "depreciated_value": self.depreciated_value(self.game.current_year),
             "launched": self.launched,
             "active": self.active,
         }
     
     def depreciated_value(self, year):
         age = year - self.launched
-        if(age >= self.ferry_class.usable_life):
-            return 0
-        return self.ferry_class.residual_value - self.ferry_class.cost * age / self.ferry_class.usable_life
+        return max(self.ferry_class.residual_value, self.ferry_class.cost - self.ferry_class.cost * age / self.ferry_class.usable_life)
         
     id = Column(Integer, primary_key = True)
     active = Column(Boolean, default = True)
     name = Column(String(64))
-    launched = Column(DateTime)
+    launched = Column(Integer, nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     ferry_result = relationship('Ferry_Result', backref = 'ferry')
@@ -128,7 +127,7 @@ class Game(Base):
     created_date = Column(DateTime, default = datetime.now)
     current_week = Column(Integer, default = 1)
     current_year = Column(Integer, default = 2000)
-    cash_available = Column(Float, default = 1000000)
+    cash_available = Column(Integer, default = 1000000)
     player_id = Column(Integer, ForeignKey('users.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'game')
     routes = relationship('Route', backref = 'game')

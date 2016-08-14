@@ -132,7 +132,8 @@ def ferries_post(game_id):
     ferry = database.Ferry(
         ferry_class = ferry_class,
         name = json_data['name'],
-        game = game
+        game = game,
+        launched = game.current_year
     )
     
     # reduce cash available by the purchase price

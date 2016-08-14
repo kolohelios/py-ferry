@@ -334,13 +334,16 @@ class TestAPI(unittest.TestCase):
         pw = 'notsecret'
         bob = database.User(name = 'ferrycapn', email = 'capnonthebridge@gmail.com', password = generate_password_hash(pw))
         george = database.User(name = 'bestsysmgr', email = 'bestsysmgr@gmail.com', password = generate_password_hash(pw))
-        ferry_class_props = { 'name': 'Jumbo Mark II' }
-        ferry_class = database.Ferry_Class(name = ferry_class_props['name'])
+        ferry_class_props = { 'name': 'Jumbo Mark II', 'usable_life': 60, 'residual_value': 1000000, 'cost': 1000000 }
+        ferry_class = database.Ferry_Class(
+            name = ferry_class_props['name'], usable_life = ferry_class_props['usable_life'], 
+            residual_value = ferry_class_props['residual_value'], cost = ferry_class_props['cost']
+        )
         gameA = database.Game(player = bob)
         gameB = database.Game(player = george)
 
-        ferryA = database.Ferry(name = 'Puget Rider', ferry_class = ferry_class, game = gameA)
-        ferryB = database.Ferry(ferry_class = ferry_class, game = gameB)
+        ferryA = database.Ferry(name = 'Puget Rider', ferry_class = ferry_class, game = gameA, launched = 2000)
+        ferryB = database.Ferry(ferry_class = ferry_class, game = gameB, launched = 2000)
 
         session.add_all([bob, george, ferry_class, gameA, gameB, ferryA, ferryB])
         session.commit()
@@ -491,7 +494,9 @@ class TestAPI(unittest.TestCase):
             'speed': 21,
             'burn_rate': 350,
             'turnover_time': 0.2,
-            'cost': 50000
+            'cost': 50000,
+            'residual_value': 4000,
+            'usable_life': 60
         }
         
         ferry_class_A = database.Ferry_Class(
@@ -503,6 +508,8 @@ class TestAPI(unittest.TestCase):
             burn_rate = ferry_class_props['burn_rate'],
             turnover_time = ferry_class_props['turnover_time'],
             cost = ferry_class_props['cost'],
+            residual_value = ferry_class_props['residual_value'],
+            usable_life = ferry_class_props['usable_life']
         )
         
         game = database.Game(player = bob)
@@ -531,7 +538,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 5)
+        self.assertEqual(len(data), 6)
         
     def test_ferry_post_insufficient_funds(self):
         ''' test the purchasing of a ferry when player doesn't have enough available cash '''
@@ -654,7 +661,8 @@ class TestAPI(unittest.TestCase):
         ferry = database.Ferry(
             ferry_class = ferry_class_A,
             game = game,
-            name = 'M/V Minnow'
+            name = 'M/V Minnow',
+            launched = 2000,
         )
         
         session.add_all([seattle, bainbridge_island, bob, game, ferry_class_A, ferry])
@@ -754,6 +762,9 @@ class TestAPI(unittest.TestCase):
             'speed': 21,
             'burn_rate': 350,
             'turnover_time': 0.2,
+            'cost': 50000,
+            'residual_value': 10000,
+            'usable_life': 60
         }
         ferry_class_A = database.Ferry_Class(
             name = ferry_class_props['name'],
@@ -763,11 +774,15 @@ class TestAPI(unittest.TestCase):
             speed = ferry_class_props['speed'],
             burn_rate = ferry_class_props['burn_rate'],
             turnover_time = ferry_class_props['turnover_time'],
+            cost = ferry_class_props['cost'],
+            residual_value = ferry_class_props['residual_value'],
+            usable_life = ferry_class_props['usable_life'],
         )
         
         ferry = database.Ferry(
             game = game, ferry_class = ferry_class_A, route = route, 
-            name = 'M/V Wenatchee'
+            name = 'M/V Wenatchee',
+            launched = 2000
         )
         
         session.add_all([bob, game, seattle, bainbridge_island, route, ferry_class_A, ferry])
