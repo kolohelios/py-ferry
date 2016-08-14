@@ -2,8 +2,8 @@
 
 angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
-['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', '_',
-function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, _) {
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', 'TurnResult', '_',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, TurnResult, _) {
     
     $scope.oneAtATime = true;
     
@@ -182,6 +182,35 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
             var index = _.findIndex($scope.routes, {id: route.id});
             console.log(index);
             $scope.routes.splice(index, 1, route);
+        }, function() {
+          console.info('Modal dismissed at: ' + new Date());
+        });
+    }
+    
+    $scope.turnResults = {};
+    
+    $scope.turnResults.open = function() {
+        var modalInstance = $uibModal.open({
+           animation: $scope.animationsEnabled,
+           templateUrl: 'views/games/modals/games-detail-turn-results-modal.html',
+           controller: 'GamesDetailTurnResultsModalInstanceCtrl',
+           size: 'lg',
+           resolve: {
+              turnResult: function() {
+                  // TODO handle the new year problem here
+                  return TurnResult.fetch($scope.game().id, $scope.game().current_year, $scope.game().current_week - 1)
+                  .then(function(response) {
+                      return response;
+                  })
+                  .catch(function(error) {
+                      console.error(error);
+                  });
+              }
+           }
+        });
+        
+        modalInstance.result.then(function() {
+            
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });

@@ -394,6 +394,7 @@ def games_endturn(game_id):
         week = game.current_week,
         year = game.current_year,
         route_results = routes_results,
+        fuel_cost = models.Fuel().cost_per_gallon(),
     )
     
     session.add(turn_result)
@@ -410,23 +411,26 @@ def games_endturn(game_id):
     data = json.dumps(game.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
     
-@app.route('/api/games/<int:game_id>/turn-results/<int:week_number>', methods = ['GET'])
+@app.route('/api/games/<int:game_id>/turn_results/<int:year>/week/<int:week>', methods = ['GET'])
 @jwt_required()
 @decorators.accept('application/json')
-def games_get_turn(game_id, week_number):
-    ''' get turn results given a game ID and week number '''
+def games_get_turn(game_id, year, week):
+    ''' get turn results given a game ID and year and week number '''
 
     # make sure the game ID belongs to the current user
-    # TODO we probably don't have to get the game explicitly, we can probable jsut access the player through the game property
+    # TODO we probably don't have to get the game explicitly, we can probably just access the player through the game property
     game = session.query(database.Game).get(game_id)
     if not game.player == current_identity:
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
 
     # TODO we need to refactor the following query if we drop using the explicit game record check
-    turn_result = session.query(database.Turn_Result).filter(game == game, week_number == week_number)[0]
+    turn_result = session.query(database.Turn_Result).filter(game == game, database.Turn_Result.year == year, database.Turn_Result.week == week).first()
     
-    route_results = session.query(database.Route_Result).filter(turn_result == turn_result)
+    if not turn_result:
+        data = {'message': 'There were no results found matching the request.'}
+        return Response(data, 400, mimetype = 'application/json')
 
     data = json.dumps(turn_result.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
+    

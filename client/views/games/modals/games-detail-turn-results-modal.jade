@@ -1,0 +1,41 @@
+#games
+    .modal-header
+        h3.modal-title Turn Results / Weekly Summary for {{turnResult.year}} - {{turnResult.week}}
+        a.pull-right(href="" ng-click="cancel()" style="margin-top: -25px;") X
+    .modal-body
+        .row
+            .col-xs-12.col-sm-6
+                h5 Ordinary Income Statement
+                table.table
+                    thead
+                        tr
+                            th
+                            th
+                            th Name
+                            th Passengers
+                            th Fares
+                            th Ferry Staffing
+                            th Route Staffing
+                            th Fuel Used
+                            th Fuel Cost
+                            th Maintenance
+                            th Profit
+                    tbody
+                        tr(ng-repeat="row in rows" ng-class="{ 'route-row': row.type == 'route', 'ferry-row': row.type == 'ferry', 'total-row': row.type == 'total' }")
+                            td
+                            td {{row.type}}
+                            td {{row.name}}
+                            td {{row.passengers}}
+                            td {{row.revenue}}
+                            td ttl ferry staff
+                            td ttl route staff
+                            td {{row.fuelUsed}}
+                            td {{row.fuelCost}}
+                            td maint
+                            td profit
+        .row
+            .col-xs-12.col-sm-6
+                h5 Non-Ordinary Income
+    .modal-footer
+        button.btn.btn-default(ng-click="cancel()") Close
+        
