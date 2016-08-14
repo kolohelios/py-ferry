@@ -290,6 +290,54 @@ def routes_create(game_id):
         session.rollback();
         data = json.dumps({"status": "failure"})
         return Response(data, 400, mimetype = 'application/json')
+        
+@app.route('/api/games/<int:game_id>/routes/<int:route_id>', methods = ['PUT'])
+@jwt_required()
+@decorators.accept('application/json')
+@decorators.require('application/json')
+def routes_update(game_id, route_id):
+    ''' update a route for a player's game '''
+
+    # make sure the game ID belongs to the current user
+    game = session.query(database.Game).get(game_id)
+    if not game.player == current_identity:
+        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        return Response(data, 403, mimetype = 'application/json')
+        
+    json_data = request.json
+    
+    route = session.query(database.Route).get(route_id)
+    
+    if not route.game.id == game_id:
+        data = {'message': 'The route in the request does not belong to the game associated with the game ID in the request.'}
+        return Response(data, 403, mimetype = 'application/json')
+    
+    first_terminal = session.query(database.Terminal).get(json_data['terminal1Id'])
+    second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])
+    
+    ferries = []
+    for ferry in json_data['ferries']:
+        ferry = session.query(database.Ferry).get(ferry)
+        # only allow ferries to be added if they aren't already on a route or are already on this route
+        if ferry.route == None or ferry.route == route:
+            ferries.append(ferry)
+    
+    route.first_terminal = first_terminal
+    route.second_terminal = second_terminal
+    route.ferries = ferries
+    passenger_fare = json_data['passenger_fare']
+    car_fare = json_data['car_fare']
+    truck_fare = json_data['truck_fare']
+    
+    # HACK we should add formal JSON validation to replace this try...expect block
+    try:
+        session.commit()
+        data = json.dumps(route.as_dictionary())
+        return Response(data, 200, mimetype = 'application/json')    
+    except:
+        session.rollback();
+        data = json.dumps({"status": "failure"})
+        return Response(data, 400, mimetype = 'application/json')
 
 @app.route('/api/games/<int:game_id>/endturn', methods = ['GET'])
 @jwt_required()
