@@ -22,6 +22,24 @@ angular.module('py-ferry')
     return d.promise;
   };
   
+  Ferry.sell = function(gameId, ferryId) {
+    var self = this;
+    var d = $q.defer();
+    $http({
+      method: 'DELETE',
+      url: apiUrl + '/games/' + gameId + '/ferries/' + ferryId,
+      data: data
+    })
+    .then(function(response) {
+        $rootScope.$emit('updateGame', gameId);
+        d.resolve(response.data);
+    })
+    .catch(function(error) {
+        d.reject(error);
+    });
+    return d.promise;
+  };
+  
   Ferry.list = function(gameId) {
     var d = $q.defer();
       $http({

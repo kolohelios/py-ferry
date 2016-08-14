@@ -18,7 +18,7 @@ angular.module('py-ferry')
     console.log($scope.route);
     Route.create(game.id, $scope.route)
     .then(function(response) {
-      $uibModalInstance.close();
+      $uibModalInstance.close(response.data);
     })
     .catch(function(error) {
       console.error(error);

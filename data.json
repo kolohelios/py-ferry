@@ -11,7 +11,8 @@
                 "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Jumbo",
@@ -22,7 +23,8 @@
                 "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Super",
@@ -33,7 +35,8 @@
                 "turnover_time": 12,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Olympic",
@@ -44,7 +47,8 @@
                 "turnover_time": 11,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Issaquah",
@@ -55,7 +59,8 @@
                 "turnover_time": 10,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Evergreen State",
@@ -66,7 +71,8 @@
                 "turnover_time": 8,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Kwa-di Tabil",
@@ -77,7 +83,8 @@
                 "turnover_time": 8,
                 "burn_rate": 350,
                 "cost": 80000000,
-                "residual_value": 2000000
+                "residual_value": 2000000,
+                "usable_life": 60
             },
             {
                 "name": "Hiyu",
@@ -88,7 +95,8 @@
                 "turnover_time": 6,
                 "burn_rate": 18,
                 "cost": 750000,
-                "residual_value": 100000
+                "residual_value": 100000,
+                "usable_life": 60
             }
         ]
     },
