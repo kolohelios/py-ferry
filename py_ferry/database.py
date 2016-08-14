@@ -91,6 +91,7 @@ class Ferry(Base):
             "ferry_class": self.ferry_class.as_dictionary(),
             "depreciated_value": self.depreciated_value(self.game.current_year),
             "launched": self.launched,
+            "route": self.route.as_dictionary() if self.route != None else {},
             "active": self.active,
         }
     
@@ -118,7 +119,7 @@ class Game(Base):
             "cash_available": self.cash_available,
             "current_week": self.current_week,
             "current_year": self.current_year,
-            "ferries": [ferry.as_dictionary() for ferry in self.ferries],
+            "ferries": [ferry.as_dictionary() for ferry in self.ferries if ferry.active == True],
             "routes": [route.as_dictionary() for route in self.routes],
         }
     

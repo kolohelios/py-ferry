@@ -103,7 +103,7 @@ def ferries_get(game_id):
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
     
-    ferries = session.query(database.Ferry).filter(database.Ferry.game == game)
+    ferries = session.query(database.Ferry).filter(database.Ferry.game == game, database.Ferry.active == True)
 
     data = json.dumps([ferry.as_dictionary() for ferry in ferries])
     return Response(data, 200, mimetype = 'application/json')
@@ -127,6 +127,8 @@ def ferries_sell(game_id, ferry_id):
         return Response(data, 403, mimetype = 'application/json')
     
     ferry.active = False
+    # clear the route associated with this ferry to take it out of service
+    ferry.route = {}
     
     game.cash_available += ferry.depreciated_value(game.current_year)
 
@@ -268,7 +270,9 @@ def routes_create(game_id):
     ferries = []
     for ferry in json_data['ferries']:
         ferry = session.query(database.Ferry).get(ferry)
-        ferries.append(ferry)
+        # only allow ferries to be added if they aren't already on a route
+        if ferry.route == None:
+            ferries.append(ferry)
     
     route = database.Route(
         first_terminal = first_terminal, second_terminal = second_terminal, 
@@ -286,8 +290,6 @@ def routes_create(game_id):
         session.rollback();
         data = json.dumps({"status": "failure"})
         return Response(data, 400, mimetype = 'application/json')
-
-    
 
 @app.route('/api/games/<int:game_id>/endturn', methods = ['GET'])
 @jwt_required()
