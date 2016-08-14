@@ -225,6 +225,9 @@ class Route_Result(Base):
             "id": self.id,
             "first_terminal": self.first_terminal.as_dictionary(),
             "second_terminal": self.second_terminal.as_dictionary(),
+            "passenger_fare": self.passenger_fare,
+            "car_fare": self.car_fare,
+            "truck_fare": self.truck_fare,
             "ferry_results": [ferry_result.as_dictionary() for ferry_result in self.ferry_results] 
         }
         
@@ -251,7 +254,8 @@ class Turn_Result(Base):
             "game_id": self.game_id,
             "week": self.week,
             "year": self.year,
-            "route_results": [route_result.as_dictionary() for route_result in self.route_results]
+            "fuel_cost": self.fuel_cost,
+            "route_results": [route_result.as_dictionary() for route_result in self.route_results],
         }
         
     id = Column(Integer, primary_key = True)

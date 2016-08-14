@@ -822,7 +822,7 @@ class TestAPI(unittest.TestCase):
         
         self.assertEqual(data['current_week'], 2)
         
-        response = self.client.get('/api/games/' + str(game.id) + '/turn-results/' + str(game.current_week), 
+        response = self.client.get('/api/games/' + str(game.id) + '/turn_results/' + str(game.current_year) + '/week/' + str(game.current_week - 1), 
             headers = [
                 ('Accept', 'application/json'),
                 ('Authorization', 'JWT ' + token)
@@ -833,7 +833,6 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        print(data)
         
         self.assertEqual(data['week'], 1)
         self.assertEqual(data['year'], 2000)
