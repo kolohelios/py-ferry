@@ -57,7 +57,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
        $state.go('login');
     });
     
-    $scope.animationsEnabled = true;
+    $scope.animationsEnabled = false;
     
     $scope.endTurn = function() {
         Game.endTurn(gameId);  
@@ -133,8 +133,46 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                    return $scope.game();
                },
                ferries: function() {
+                    console.log($scope.ferries);
+                    var ferries = $scope.ferries.slice(0);
+                    var unassignedFerries = _.filter($scope.ferries, function(ferry) {
+                        return !ferry.route.id;
+                    });
+                   console.log(unassignedFerries);
+                   return unassignedFerries;
+               }
+           }
+        });
+        
+        modalInstance.result.then(function(route) {
+            $scope.routes.push(route);
+        }, function() {
+          console.info('Modal dismissed at: ' + new Date());
+        });
+    }
+    
+    $scope.route.edit = function() {
+        var modalInstance = $uibModal.open({
+           animation: $scope.animationsEnabled,
+           templateUrl: 'views/games/games-detail-route-edit-modal.html',
+           controller: 'GamesDetailRouteEditModalInstanceCtrl',
+           size: 'md',
+           resolve: {
+               terminals: function() {
+                   console.log($scope.terminals);
+                   return $scope.terminals;
+               },
+               game: function() {
+                   console.log($scope.game);
+                   return $scope.game();
+               },
+               ferries: function() {
                    console.log($scope.game);
                    return $scope.ferries;
+               },
+               routes: function() {
+                   console.log($scope.routes);
+                   return $scope.routes;
                }
            }
         });
