@@ -34,6 +34,25 @@ angular.module('py-ferry')
         });
         return d.promise;
     }
+    
+    Route.save = function(gameId, data) {
+        var d = $q.defer();
+        var routeId = data.id;
+        delete data.id;
+        $http({
+          method: 'PUT',
+          url: apiUrl + '/games/' + gameId + '/routes/' + routeId,
+          data: data
+        })
+        .then(function(response) {
+            console.log(response.data);
+            d.resolve(response.data);
+        })
+        .catch(function(error) {
+            d.reject(error);
+        });
+        return d.promise;
+    }
 
   return Route;
 }]);

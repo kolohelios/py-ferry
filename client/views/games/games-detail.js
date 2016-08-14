@@ -68,7 +68,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.ferry.buy = function() {
         var modalInstance = $uibModal.open({
            animation: $scope.animationsEnabled,
-           templateUrl: 'views/games/games-detail-ferry-buy-modal.html',
+           templateUrl: 'views/games/modals/games-detail-ferry-buy-modal.html',
            controller: 'GamesDetailFerryBuyModalInstanceCtrl',
            size: 'md',
            resolve: {
@@ -93,7 +93,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.ferry.sell = function() {
         var modalInstance = $uibModal.open({
            animation: $scope.animationsEnabled,
-           templateUrl: 'views/games/games-detail-ferry-sell-modal.html',
+           templateUrl: 'views/games/modals/games-detail-ferry-sell-modal.html',
            controller: 'GamesDetailFerrySellModalInstanceCtrl',
            size: 'md',
            resolve: {
@@ -120,7 +120,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.route.create = function() {
         var modalInstance = $uibModal.open({
            animation: $scope.animationsEnabled,
-           templateUrl: 'views/games/games-detail-route-create-modal.html',
+           templateUrl: 'views/games/modals/games-detail-route-create-modal.html',
            controller: 'GamesDetailRouteCreateModalInstanceCtrl',
            size: 'md',
            resolve: {
@@ -154,7 +154,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.route.edit = function() {
         var modalInstance = $uibModal.open({
            animation: $scope.animationsEnabled,
-           templateUrl: 'views/games/games-detail-route-edit-modal.html',
+           templateUrl: 'views/games/modals/games-detail-route-edit-modal.html',
            controller: 'GamesDetailRouteEditModalInstanceCtrl',
            size: 'md',
            resolve: {
@@ -167,8 +167,8 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                    return $scope.game();
                },
                ferries: function() {
-                   console.log($scope.game);
-                   return $scope.ferries;
+                    console.log($scope.ferries);
+                    return $scope.ferries;
                },
                routes: function() {
                    console.log($scope.routes);
@@ -178,7 +178,10 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         });
         
         modalInstance.result.then(function(route) {
-            $scope.routes.push(route);
+            console.log(route);
+            var index = _.findIndex($scope.routes, {id: route.id});
+            console.log(index);
+            $scope.routes.splice(index, 1, route);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
