@@ -266,10 +266,10 @@ def routes_create(game_id):
         
     json_data = request.json
 
-    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']):
+    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']).first():
         data = json.dumps({"message": "A route already exists with these two terminals."})
         return Response(data, 400, mimetype = 'application/json')
-    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']):
+    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']).first():
         data = json.dumps({"message": "A route already exists with these two terminals."})
         return Response(data, 400, mimetype = 'application/json')
     

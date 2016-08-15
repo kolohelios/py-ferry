@@ -34,7 +34,7 @@
                     input(type="currency" id="truck" ng-model="route.truck_fare")
                 
     .modal-footer
-        uib-alert.alert-warning(ng-repeat="alert in alerts" close="closeAlert($index)" dismiss-on-timeout="1000") {{alert.msg}}
+        uib-alert.alert-warning(ng-repeat="alert in alerts" close="closeAlert($index)" dismiss-on-timeout="3000") {{alert.msg}}
         button.btn.btn-default(ng-click="create()") Create
         button.btn.btn-default(ng-click="cancel()") Cancel
     

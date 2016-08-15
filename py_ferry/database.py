@@ -168,6 +168,7 @@ class Route(Base):
             "passenger_fare": self.passenger_fare,
             "car_fare": self.car_fare,
             "truck_fare": self.truck_fare,
+            "active": self.active,
         }
     
     # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route
@@ -185,9 +186,10 @@ class Route(Base):
     
     first_terminal_id = Column(Integer, ForeignKey('terminals.id'))
     second_terminal_id = Column(Integer, ForeignKey('terminals.id'))
+    active = Column(Boolean, default = True)
     first_terminal = relationship('Terminal', uselist = False, foreign_keys = first_terminal_id)
     second_terminal = relationship('Terminal', uselist = False, foreign_keys = second_terminal_id)
-    
+
     # base_route_id = Column(Integer, ForeignKey('base_routes.id'), nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferries = relationship('Ferry', backref = 'route')
