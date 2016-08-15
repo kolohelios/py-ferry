@@ -4,18 +4,18 @@
             h1 Register
             .form-group
                 label(for="name") Player Name
-                input.form-control(type="text" ng-model="player.name" id="name")
+                input.form-control(type="text" ng-model="player.name" name="name" id="name")
             .form-group
                 label(for="email") * Email
-                input.form-control(type="email" ng-model="player.email" id="email")
+                input.form-control(type="email" ng-model="player.email" name="email" id="email")
             .form-group
                 label(for="password") Password
-                input.form-control(type="password" ng-model="player.password" id="password" ng-change="checkPassword()")
+                input.form-control(type="password" ng-model="player.password" name="password" id="password" ng-change="checkPassword()")
             .form-group
                 label(for="confirm-password") Confirm Password
-                input.form-control(type="password" ng-model="confirmPassword" id="confirm-password" ng-change="checkPassword()")
+                input.form-control(type="password" ng-model="confirmPassword" name="passwordConfirm" id="confirm-password" ng-change="checkPassword()")
             label
                 input.checkbox(type="checkbox" ng-model="player.subscribe" ng-checked="player.subscribe")
                 | Please send me news about Ferry Game.
             p * Unless you have allowed otherwise by checking the “Send me news about Ferry Game” checkbox, your email address will not be shared with other players or used for any purpose than to verify your account and reset your password.
-            button.login.btn.btn-primary(type="submit" ng-click="register()") Create Account
+            button.register.btn.btn-primary(type="submit" ng-click="register()") Create Account

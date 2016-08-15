@@ -15,6 +15,7 @@
             span(ng-bind="ferryClass.trucks | number : 0")
             br
             p(ng-bind="ferryClass.cost | currency : '$' : 0")
+        p Purchase price includes a 20% acquisition cost that will not be included in the proceeds of a sale.
         .form-group(style="clear: both; padding-top: 50px;")
             label(for="name") Name
             input(type="text" id="name" ng-model="ferry.name" placeholder="Name")
