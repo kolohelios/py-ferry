@@ -122,15 +122,17 @@ def ferries_sell(game_id, ferry_id):
         
     ferry = session.query(database.Ferry).get(ferry_id)
     
-    if not ferry.game.id == game_id:
+    if not ferry.game == game:
         data = {'message': 'The ferry being sold does not match the game ID in the request.'}
         return Response(data, 403, mimetype = 'application/json')
     
     ferry.active = False
     # clear the route associated with this ferry to take it out of service
-    ferry.route = {}
+    ferry.route = None
     
     game.cash_available += ferry.depreciated_value(game.current_year)
+    
+    session.commit()
 
     data = json.dumps(ferry.as_dictionary())
     return Response(data, 200, mimetype = 'application/json')
@@ -259,10 +261,18 @@ def routes_create(game_id):
     # make sure the game ID belongs to the current user
     game = session.query(database.Game).get(game_id)
     if not game.player == current_identity:
-        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        data = json.dumps({'message': 'The game ID for the request does not belong to the current user.'})
         return Response(data, 403, mimetype = 'application/json')
         
     json_data = request.json
+
+    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']):
+        data = json.dumps({"message": "A route already exists with these two terminals."})
+        return Response(data, 400, mimetype = 'application/json')
+    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']):
+        data = json.dumps({"message": "A route already exists with these two terminals."})
+        return Response(data, 400, mimetype = 'application/json')
+    
     
     first_terminal = session.query(database.Terminal).get(json_data['terminal1Id'])
     second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])

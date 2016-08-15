@@ -7,6 +7,8 @@ angular.module('py-ferry')
   $scope.game = game;
   $scope.ferries = ferries;
   
+  $scope.alerts = [];
+  
   $scope.route = {};
   
   $scope.create = function () {
@@ -18,11 +20,18 @@ angular.module('py-ferry')
     console.log($scope.route);
     Route.create(game.id, $scope.route)
     .then(function(response) {
-      $uibModalInstance.close(response.data);
+      $uibModalInstance.close(response);
     })
     .catch(function(error) {
+      if(error.data.message === 'A route already exists with these two terminals.') {
+        $scope.alerts.push({msg: error.data.message});
+      }
       console.error(error);
     });
+  };
+  
+  $scope.closeAlert = function(index) {
+    $scope.alerts.splice(index, 1);
   };
 
   $scope.cancel = function () {
