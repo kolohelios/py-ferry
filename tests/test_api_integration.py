@@ -694,7 +694,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 8)
         
     def test_get_routes(self):
         ''' get all the routes for a player's game '''

@@ -1,6 +1,6 @@
 angular.module('py-ferry')
 .controller('GamesDetailTurnResultsModalInstanceCtrl', 
-['$scope', '$uibModalInstance', 'turnResult', '_', function ($scope, $uibModalInstance, turnResult, _) {
+['$scope', '$uibModalInstance', 'turnResult', '_', 'currencyScalerFilter', function ($scope, $uibModalInstance, turnResult, _, currencyScalerFilter) {
 
   $scope.turnResult = turnResult;
   console.log($scope.turnResult);
@@ -32,6 +32,8 @@ angular.module('py-ferry')
          ferryRow.fuelUsed = ferry.fuel_used;
          routeTotals.fuelUsed += ferryRow.fuelUsed;
          totals.fuelUsed += ferryRow.fuelUsed;
+         
+         ferryRow.fuelCost = ferryRow.fuelUsed * $scope.turnResult.fuel_cost;
          
          $scope.rows.push(ferryRow);
       });

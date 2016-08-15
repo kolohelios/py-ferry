@@ -11,10 +11,16 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
         span.icon-bar
       a.navbar-brand(ui-sref='home' href="") py-ferry
     .collapse.navbar-collapse(uib-collapse="isCollapsed" collapse="isCollapsed")
-      div(ng-if="game().current_year")
-        span.stat Year: {{game().current_year}}
-        span.stat Week: {{game().current_week}}
-        span.stat Cash: {{game().cash_available | currency : '$' : 0}}
+      div.game-stats(ng-if="game().current_year")
+        span.stat 
+          span Year: 
+          span(ng-bind="game().current_year")
+        span.stat 
+          span Week: 
+          span(ng-bind="game().current_week")
+        span.stat 
+          span Cash: 
+          span(ng-bind="game().cash_available | currency : '$' : 0")
       
       // ul.main-menu.nav.navbar-nav.navbar-left
       //   li.dropdown

@@ -81,12 +81,12 @@ angular.module('py-ferry')
     });
   };
   
-  Game.endTurn = function(gameId) {
+  Game.endTurn = function(gameId, turns) {
     var self = this;
     var d = $q.defer();
     $http({
       method: 'GET',
-      url: apiUrl + '/games/' + gameId + '/endturn'
+      url: apiUrl + '/games/' + gameId + '/endturn' + (turns ? '/' + turns : '')
     })
     .then(function(response) {
         self.activeGame = response.data;

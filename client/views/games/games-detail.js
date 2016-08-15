@@ -2,8 +2,8 @@
 
 angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
-['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', 'TurnResult', '_',
-function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, TurnResult, _) {
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', 'TurnResult', '_', 'currencyScalerFilter',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, TurnResult, _, currencyScalerFilter) {
     
     $scope.oneAtATime = true;
     
@@ -38,7 +38,6 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
                 $scope.game = function() {
                     return Game.getActiveGame();
                   };
-                console.log($scope.game());
             })
             .catch(function(error){
                 console.error(error);
@@ -59,8 +58,8 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     
     $scope.animationsEnabled = false;
     
-    $scope.endTurn = function() {
-        Game.endTurn(gameId);  
+    $scope.endTurn = function(turns) {
+        Game.endTurn(gameId, turns);  
     };
     
     $scope.ferry = {};
@@ -178,9 +177,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         });
         
         modalInstance.result.then(function(route) {
-            console.log(route);
             var index = _.findIndex($scope.routes, {id: route.id});
-            console.log(index);
             $scope.routes.splice(index, 1, route);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
