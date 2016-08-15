@@ -2,8 +2,8 @@
 
 angular.module('py-ferry')
 .controller('GamesDetailCtrl', 
-['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', 'TurnResult', '_',
-function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, TurnResult, _) {
+['$scope', '$state', 'Game', 'Utils', '$uibModal', 'FerryClass', 'Terminal', 'Ferry', 'Route', 'TurnResult', '_', 'currencyScalerFilter',
+function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Route, TurnResult, _, currencyScalerFilter) {
     
     $scope.oneAtATime = true;
     
@@ -59,8 +59,8 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     
     $scope.animationsEnabled = false;
     
-    $scope.endTurn = function() {
-        Game.endTurn(gameId);  
+    $scope.endTurn = function(turns) {
+        Game.endTurn(gameId, turns);  
     };
     
     $scope.ferry = {};
