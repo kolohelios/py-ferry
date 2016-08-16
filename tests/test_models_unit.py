@@ -61,7 +61,7 @@ class ModelTests(unittest.TestCase):
         ferry = Ferry(ferry_class = ferry_class, name = 'M/V Wenatchee')
         ferries = [ferry]
         first_terminal = Terminal(
-            id = 1, passenger_pool = 13000, car_pool = 2000, truck_pool = 300
+            id = 1, passenger_pool = 1000, car_pool = 2000, truck_pool = 300
         )
         second_terminal = Terminal(
             id = 2, passenger_pool = 13000, car_pool = 2000, truck_pool = 300
@@ -112,9 +112,9 @@ class ModelTests(unittest.TestCase):
         )
 
         daily_results = Sailings().daily_crossings(route, 'Tuesday', 7, 2016)
-        self.assertEqual(daily_results[0]['results']['total_passengers'], 8270)
-        self.assertEqual(daily_results[0]['results']['total_cars'], 1276)
-        self.assertEqual(daily_results[0]['results']['total_trucks'], 190)
+        self.assertEqual(daily_results[0]['results']['total_passengers'], 7253)
+        self.assertEqual(daily_results[0]['results']['total_cars'], 1117)
+        self.assertEqual(daily_results[0]['results']['total_trucks'], 164)
         # self.assertEqual(daily_results[0]['results']['total_sailings'], 35)
         # self.assertEqual(daily_results[0]['results']['total_hours'], 20)
         
@@ -137,9 +137,9 @@ class ModelTests(unittest.TestCase):
         
         weekly_results = Sailings().weekly_crossings(route, 7, 2016)
         self.assertEqual(weekly_results[0]['ferry'], ferry)
-        self.assertEqual(weekly_results[0]['results']['total_passengers'], 56750)
-        self.assertEqual(weekly_results[0]['results']['total_cars'], 8756)
-        self.assertEqual(weekly_results[0]['results']['total_trucks'], 1304)
+        self.assertEqual(weekly_results[0]['results']['total_passengers'], 52375)
+        self.assertEqual(weekly_results[0]['results']['total_cars'], 8071)
+        self.assertEqual(weekly_results[0]['results']['total_trucks'], 1192)
         self.assertEqual(weekly_results[0]['results']['total_sailings'], 269)
         self.assertEqual(weekly_results[0]['results']['total_hours'], 152)
         
@@ -169,11 +169,11 @@ class ModelTests(unittest.TestCase):
         weekly_results = Sailings().weekly_crossings(route, 7, 2016)
         self.assertEqual(weekly_results[0]['ferry'], ferryA)
         self.assertEqual(weekly_results[1]['ferry'], ferryB)
-        self.assertEqual(weekly_results[0]['results']['total_passengers'], 52368)
+        self.assertEqual(weekly_results[0]['results']['total_passengers'], 50184)
         self.assertEqual(weekly_results[1]['results']['total_passengers'], 4382)
-        self.assertEqual(weekly_results[0]['results']['total_cars'], 8756)
+        self.assertEqual(weekly_results[0]['results']['total_cars'], 8071)
         self.assertEqual(weekly_results[1]['results']['total_cars'], 0)
-        self.assertEqual(weekly_results[0]['results']['total_trucks'], 1304)
+        self.assertEqual(weekly_results[0]['results']['total_trucks'], 1192)
         self.assertEqual(weekly_results[1]['results']['total_trucks'], 0)
         self.assertEqual(weekly_results[0]['results']['total_sailings'], 269)
         self.assertEqual(weekly_results[1]['results']['total_sailings'], 435)

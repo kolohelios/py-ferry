@@ -179,6 +179,13 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         modalInstance.result.then(function(route) {
             var index = _.findIndex($scope.routes, {id: route.id});
             $scope.routes.splice(index, 1, route);
+            Ferry.list(gameId)
+            .then(function(response) {
+                    $scope.ferries = response; 
+                })
+                .catch(function(error) {
+                    console.error(error);
+                });
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });

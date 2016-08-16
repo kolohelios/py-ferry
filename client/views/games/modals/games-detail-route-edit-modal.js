@@ -9,6 +9,7 @@ function ($scope, $uibModalInstance, terminals, game, ferries, routes, Route, _)
   $scope.game = game;
   $scope.ferries = ferries;
   $scope.availableFerries = [];
+  $scope.ferriesObject = {};
   $scope.routes = routes;
   $scope.terminal1Id = 0;
   $scope.terminal2Id = 0;
@@ -16,9 +17,18 @@ function ($scope, $uibModalInstance, terminals, game, ferries, routes, Route, _)
   $scope.route = {};
   
   $scope.selectRoute = function(route) {
-    $scope.route = _.clone(route);
-    $scope.availableFerries = _.filter($scope.ferries, function(ferry) {
-      return !ferry.route.id || ferry.route.id == $scope.route.id;
+    $scope.route = _.cloneDeep(route);
+    $scope.availableFerries = [];
+    $scope.ferriesObject = {};
+    $scope.availableFerries = $scope.ferries.filter(function(ferry) {
+      if(!(ferry.route && ferry.route.id)) {
+        $scope.ferriesObject[ferry.id] = false;
+        return true;
+      } else if(ferry.route.id == $scope.route.id) {
+        $scope.ferriesObject[ferry.id] = true;
+        return true;
+      }
+      return false;
     });
     $scope.route.terminal1Id = $scope.route.first_terminal.id;
     $scope.route.terminal2Id = $scope.route.second_terminal.id;
@@ -28,14 +38,16 @@ function ($scope, $uibModalInstance, terminals, game, ferries, routes, Route, _)
   };
   
   $scope.save = function () {
-    var ferriesObject = $scope.route.ferries;
     $scope.route.ferries = [];
-    for(var ferry in ferriesObject) {
-      $scope.route.ferries.push(ferry);
+    console.log($scope.ferriesObject);
+    for(var ferry in $scope.ferriesObject) {
+      if($scope.ferriesObject[ferry]) {
+        $scope.route.ferries.push(ferry);  
+      }
     }
     Route.save(game.id, $scope.route)
     .then(function(response) {
-      $uibModalInstance.close(response.data);
+      $uibModalInstance.close(response);
     })
     .catch(function(error) {
       console.error(error);

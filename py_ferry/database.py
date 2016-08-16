@@ -97,7 +97,7 @@ class Ferry(Base):
     
     def depreciated_value(self, year):
         age = year - self.launched
-        return max(self.ferry_class.residual_value, self.ferry_class.cost - self.ferry_class.cost * age / self.ferry_class.usable_life)
+        return max(self.ferry_class.residual_value, (self.ferry_class.cost * 0.8) - self.ferry_class.cost * age / self.ferry_class.usable_life)
         
     id = Column(Integer, primary_key = True)
     active = Column(Boolean, default = True)
