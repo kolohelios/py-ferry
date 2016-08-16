@@ -236,11 +236,17 @@ class Sailings(object):
         }
         for time in range(0, 23):
             # add passengers, cars, and trucks to the queues
+            first_terminal_queue['passengers'] = math.floor(first_terminal_queue['passengers'] / 2)
             first_terminal_queue['passengers'] += Passenger().route_passenger_demand(route.first_terminal.passenger_pool, time, day, week, year)
+            second_terminal_queue['passengers'] = math.floor(second_terminal_queue['passengers'] / 2)
             second_terminal_queue['passengers'] += Passenger().route_passenger_demand(route.second_terminal.passenger_pool, time, day, week, year)
+            first_terminal_queue['cars'] = math.floor(first_terminal_queue['cars'] / 2)
             first_terminal_queue['cars'] += Passenger().route_passenger_demand(route.first_terminal.car_pool, time, day, week, year)
+            second_terminal_queue['cars'] = math.floor(second_terminal_queue['cars'] / 2)
             second_terminal_queue['cars'] += Passenger().route_passenger_demand(route.second_terminal.car_pool, time, day, week, year)
+            first_terminal_queue['trucks'] = math.floor(first_terminal_queue['trucks'] / 2)
             first_terminal_queue['trucks'] += Passenger().route_passenger_demand(route.first_terminal.truck_pool, time, day, week, year)
+            second_terminal_queue['trucks'] = math.floor(second_terminal_queue['trucks'] / 2)
             second_terminal_queue['trucks'] += Passenger().route_passenger_demand(route.second_terminal.truck_pool, time, day, week, year)
             for accumulation in accumulations:
                 for sailing in accumulation['schedule']:

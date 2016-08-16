@@ -24,9 +24,9 @@
         .row
             .col-xs-12
                 .form-group
-                    div(ng-repeat="ferry in availableFerries")
+                    div(ng-repeat="ferry in availableFerries track by $index")
                         label(ng-bind="ferry.name")
-                        input.checkbox(type="checkbox" ng-checked="ferry.route.id == route.id" ng-model="route.ferries[ferry.id]")
+                        input.checkbox(type="checkbox" ng-checked="ferry.route.id == route.id" ng-model="ferriesObject[ferry.id]")
         .row
             .col-xs-4
                 .form-group

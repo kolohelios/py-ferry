@@ -265,11 +265,11 @@ def routes_create(game_id):
         return Response(data, 403, mimetype = 'application/json')
         
     json_data = request.json
-
-    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']).first():
+    
+    if session.query(database.Route).filter(database.Route.game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']).first():
         data = json.dumps({"message": "A route already exists with these two terminals."})
         return Response(data, 400, mimetype = 'application/json')
-    if session.query(database.Route).filter(game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']).first():
+    if session.query(database.Route).filter(database.Route.game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']).first():
         data = json.dumps({"message": "A route already exists with these two terminals."})
         return Response(data, 400, mimetype = 'application/json')
     
@@ -281,13 +281,17 @@ def routes_create(game_id):
     for ferry in json_data['ferries']:
         ferry = session.query(database.Ferry).get(ferry)
         # only allow ferries to be added if they aren't already on a route
-        if ferry.route == None:
+        if ferry and ferry.route == None:
             ferries.append(ferry)
+            
+    passenger_fare = json_data.get('passenger_fare', 0)
+    car_fare = json_data.get('car_fare', 0)
+    truck_fare = json_data.get('truck_fare', 0)
     
     route = database.Route(
         first_terminal = first_terminal, second_terminal = second_terminal, 
-        game = game, ferries = ferries, passenger_fare = json_data['passenger_fare'],
-        car_fare = json_data['car_fare'], truck_fare = json_data['truck_fare']
+        game = game, ferries = ferries, passenger_fare = passenger_fare,
+        car_fare = car_fare, truck_fare = truck_fare
     )
     
     # HACK we should add formal JSON validation to replace this try...expect block
@@ -326,18 +330,19 @@ def routes_update(game_id, route_id):
     second_terminal = session.query(database.Terminal).get(json_data['terminal2Id'])
     
     ferries = []
+    print(json_data['ferries'])
     for ferry in json_data['ferries']:
-        ferry = session.query(database.Ferry).get(ferry)
+        ferry = session.query(database.Ferry).get(int(ferry))
         # only allow ferries to be added if they aren't already on a route or are already on this route
-        if ferry.route == None or ferry.route == route:
+        if not ferry.route or (ferry.route and ferry.route == route):
             ferries.append(ferry)
     
     route.first_terminal = first_terminal
     route.second_terminal = second_terminal
     route.ferries = ferries
-    passenger_fare = json_data['passenger_fare']
-    car_fare = json_data['car_fare']
-    truck_fare = json_data['truck_fare']
+    route.passenger_fare = json_data.get('passenger_fare', 0)
+    route.car_fare = json_data.get('car_fare', 0)
+    route.truck_fare = json_data.get('truck_fare', 0)
     
     # HACK we should add formal JSON validation to replace this try...expect block
     try:
