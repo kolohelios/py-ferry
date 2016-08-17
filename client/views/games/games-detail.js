@@ -59,7 +59,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.animationsEnabled = false;
     
     $scope.endTurn = function(turns) {
-        Game.endTurn(gameId, turns);  
+        Game.endTurn(gameId, turns);
     };
     
     $scope.ferry = {};
@@ -72,11 +72,9 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            size: 'md',
            resolve: {
                ferryClasses: function() {
-                   console.log($scope.ferryClasses);
                    return $scope.ferryClasses;
                },
                game: function() {
-                   console.log($scope.game);
                    return $scope.game();
                }
            }
@@ -97,11 +95,9 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            size: 'md',
            resolve: {
                ferries: function() {
-                   console.log($scope.ferries);
-                   return $scope.ferries;
+                   return $scope.game().ferries;
                },
                game: function() {
-                   console.log($scope.game);
                    return $scope.game();
                }
            }
@@ -124,15 +120,12 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            size: 'md',
            resolve: {
                terminals: function() {
-                   console.log($scope.terminals);
                    return $scope.terminals;
                },
                game: function() {
-                   console.log($scope.game);
                    return $scope.game();
                },
                ferries: function() {
-                    console.log($scope.ferries);
                     var ferries = $scope.ferries.slice(0);
                     var unassignedFerries = _.filter($scope.ferries, function(ferry) {
                         return !ferry.route.id;
@@ -158,20 +151,16 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
            size: 'md',
            resolve: {
                terminals: function() {
-                   console.log($scope.terminals);
                    return $scope.terminals;
                },
                game: function() {
-                   console.log($scope.game);
                    return $scope.game();
                },
                ferries: function() {
-                    console.log($scope.ferries);
-                    return $scope.ferries;
+                    return $scope.game().ferries;
                },
                routes: function() {
-                   console.log($scope.routes);
-                   return $scope.routes;
+                   return $scope.game().routes;
                }
            }
         });
