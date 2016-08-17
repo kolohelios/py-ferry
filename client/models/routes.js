@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('py-ferry')
-.factory('Route', ['$http', '$window', '$q', 'apiUrl', '_', function($http, $window, $q, apiUrl, _) {
+.factory('Route', ['$http', '$window', '$q', 'apiUrl', '_', '$rootScope', function($http, $window, $q, apiUrl, _, $rootScope) {
   function Route() {}
   
     Route.create = function(gameId, data) {
@@ -12,6 +12,7 @@ angular.module('py-ferry')
           data: data
         })
         .then(function(response) {
+            $rootScope.$emit('updateGame', gameId);
             d.resolve(response.data);
         })
         .catch(function(error) {
@@ -46,6 +47,7 @@ angular.module('py-ferry')
         })
         .then(function(response) {
             console.log(response.data);
+            $rootScope.$emit('updateGame', gameId);
             d.resolve(response.data);
         })
         .catch(function(error) {

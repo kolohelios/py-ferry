@@ -89,20 +89,20 @@ class Ferry(Base):
             "id": self.id,
             "name": self.name,
             "ferry_class": self.ferry_class.as_dictionary(),
-            "depreciated_value": self.depreciated_value(self.game.current_year),
+            "depreciated_value": self.depreciated_value(self.game.current_year, self.game.current_week),
             "launched": self.launched,
             "route": self.route.as_dictionary() if self.route != None else {},
             "active": self.active,
         }
     
-    def depreciated_value(self, year):
-        age = year - self.launched
+    def depreciated_value(self, year, week):
+        age = (year + week / 52) - self.launched
         return max(self.ferry_class.residual_value, (self.ferry_class.cost * 0.8) - self.ferry_class.cost * age / self.ferry_class.usable_life)
         
     id = Column(Integer, primary_key = True)
     active = Column(Boolean, default = True)
     name = Column(String(64))
-    launched = Column(Integer, nullable = False)
+    launched = Column(Float, nullable = False)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     ferry_result = relationship('Ferry_Result', backref = 'ferry')
@@ -141,6 +141,7 @@ class Terminal(Base):
         return {
             "id": self.id,
             "name": self.name,
+            "abbreviation": self.abbreviation,
             "lat": self.lat,
             "lon": self.lon,
             "passenger_pool": self.passenger_pool,
@@ -150,6 +151,7 @@ class Terminal(Base):
     
     id = Column(Integer, primary_key = True)
     name = Column(String, unique = True)
+    abbreviation = Column(String, unique = True)
     lat = Column(Float)
     lon = Column(Float)
     passenger_pool = Column(Integer)
@@ -169,6 +171,7 @@ class Route(Base):
             "car_fare": self.car_fare,
             "truck_fare": self.truck_fare,
             "active": self.active,
+            "route_distance": self.route_distance(),
         }
     
     # TODO we probably should not be calculating this each time it is requested and instead calculate it once upon creation of the route

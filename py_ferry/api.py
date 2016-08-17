@@ -162,7 +162,7 @@ def ferries_post(game_id):
         ferry_class = ferry_class,
         name = json_data['name'],
         game = game,
-        launched = game.current_year
+        launched = game.current_year + (game.current_week / 52)
     )
     
     # reduce cash available by the purchase price
@@ -267,10 +267,10 @@ def routes_create(game_id):
     json_data = request.json
     
     if session.query(database.Route).filter(database.Route.game == game, database.Route.first_terminal_id == json_data['terminal1Id'], database.Route.second_terminal_id == json_data['terminal2Id']).first():
-        data = json.dumps({"message": "A route already exists with these two terminals."})
+        data = json.dumps({"message": "A route between these two terminals already exists."})
         return Response(data, 400, mimetype = 'application/json')
     if session.query(database.Route).filter(database.Route.game == game, database.Route.first_terminal_id == json_data['terminal2Id'], database.Route.second_terminal_id == json_data['terminal1Id']).first():
-        data = json.dumps({"message": "A route already exists with these two terminals."})
+        data = json.dumps({"message": "A route between these two terminals already exists."})
         return Response(data, 400, mimetype = 'application/json')
     
     
@@ -416,7 +416,7 @@ def games_endturn(game_id, turn_count = 1):
         
         session.add(turn_result)
         
-        if(game.current_week >= 51):
+        if(game.current_week >= 52):
             game.current_week = 1
             game.current_year += 1
         else:

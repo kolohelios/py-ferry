@@ -15,7 +15,7 @@
                     a.btn.btn-default(href="") Staffing
                 .col-xs-6.col-sm-7
                     div(uib-accordion close-others="oneAtATime" style="width: 100%;")
-                        div.panel-default(uib-accordion-group ng-repeat="ferry in ferries")
+                        div.panel-default(uib-accordion-group ng-repeat="ferry in game().ferries")
                             div(uib-accordion-heading) {{ferry.name}}
                             p Class: {{ferry.ferry_class.name}}
             .row
@@ -28,9 +28,12 @@
                     a.btn.btn-default(href="" ng-click="route.edit()") Edit Route
                 .col-xs-6.col-sm-7
                     div(uib-accordion close-others="oneAtATime" style="width: 100%;")
-                        div.panel-default(uib-accordion-group ng-repeat="route in routes")
-                            div(uib-accordion-heading) test
-                            p {{route.first_terminal.name}} – {{route.second_terminal.name}}
+                        div.panel-default(uib-accordion-group ng-repeat="route in game().routes")
+                            div(uib-accordion-heading) {{route.first_terminal.abbreviation}} - {{route.second_terminal.abbreviation}}
+                            p Distance: {{route.route_distance}}
+                            p Passenger Fare: {{route.passenger_fare}}
+                            p Car Fare: {{route.car_fare}}
+                            p Truck Fare: {{route.truck_fare}}
             .row
                 button.btn.btn-warning(ng-click="endTurn()") End Turn
                 button.btn.btn-warning(ng-click="endTurn(5)") End 5 Turns
