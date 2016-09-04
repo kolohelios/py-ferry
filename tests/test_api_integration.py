@@ -538,7 +538,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, 'application/json')
         
         data = json.loads(response.data.decode('ascii'))
-        self.assertEqual(len(data), 7)
+        self.assertEqual(len(data), 8)
         
     def test_ferry_post_insufficient_funds(self):
         ''' test the purchasing of a ferry when player doesn't have enough available cash '''

@@ -1,0 +1,15 @@
+#games
+    .modal-header
+        h3.modal-title Ferry Maintenance
+        a.pull-right(href="" ng-click="cancel()" style="margin-top: -25px;") X
+    .modal-body
+        .row(ng-repeat="ferry in ferries" ng-click="selectFerry(ferry.id)" ng-class="{ selected: ferryId == ferry.id }")
+            h5.col-xs-4(ng-bind="ferry.name")
+            .form-group.col-xs-6
+                input(type="range" min="0" max="100" ng-init="75" ng-model="ferry.maintenance_level")
+            p.col-xs-2(ng-bind="ferry.maintenance_level + '%'")
+            
+    .modal-footer
+        button.btn.btn-default(ng-click="save()") Save
+        button.btn.btn-default(ng-click="cancel()") Cancel
+    

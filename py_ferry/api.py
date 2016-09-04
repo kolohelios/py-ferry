@@ -14,7 +14,7 @@ from py_ferry import models
 from .database import session
 
 def authenticate(username, password):
-    user = session.query(database.User).filter_by(name = username).first()
+    user = session.query(database.User).filter(database.User.name == username).first()
     if user and check_password_hash(user.password, password):
         return user
 
@@ -367,7 +367,7 @@ def games_endturn(game_id, turn_count = 1):
         data = {'message': 'The game ID for the request does not belong to the current user.'}
         return Response(data, 403, mimetype = 'application/json')
     
-    routes = session.query(database.Route).filter(game == game)
+    routes = session.query(database.Route).filter(database.Route.game == game)
     
     for i in range(0, turn_count):
         routes_results = []
@@ -438,14 +438,14 @@ def games_get_turn(game_id, year, week):
     # TODO we probably don't have to get the game explicitly, we can probably just access the player through the game property
     game = session.query(database.Game).get(game_id)
     if not game.player == current_identity:
-        data = {'message': 'The game ID for the request does not belong to the current user.'}
+        data = json.dumps({'message': 'The game ID for the request does not belong to the current user.'})
         return Response(data, 403, mimetype = 'application/json')
 
     # TODO we need to refactor the following query if we drop using the explicit game record check
-    turn_result = session.query(database.Turn_Result).filter(game == game, database.Turn_Result.year == year, database.Turn_Result.week == week).first()
+    turn_result = session.query(database.Turn_Result).filter(database.Turn_Result.game == game, database.Turn_Result.year == year, database.Turn_Result.week == week).first()
     
     if not turn_result:
-        data = {'message': 'There were no results found matching the request.'}
+        data = json.dumps({'message': 'There were no results found matching the request.'})
         return Response(data, 400, mimetype = 'application/json')
 
     data = json.dumps(turn_result.as_dictionary())
