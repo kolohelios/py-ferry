@@ -93,6 +93,7 @@ class Ferry(Base):
             "launched": self.launched,
             "route": self.route.as_dictionary() if self.route != None else {},
             "active": self.active,
+            "maintenance_level": self.maintenance_level
         }
     
     def depreciated_value(self, year, week):
@@ -103,6 +104,7 @@ class Ferry(Base):
     active = Column(Boolean, default = True)
     name = Column(String(64))
     launched = Column(Float, nullable = False)
+    maintenance_level = Column(Integer, default = 75)
     game_id = Column(Integer, ForeignKey('games.id'), nullable = False)
     ferry_class_id = Column(Integer, ForeignKey('ferry_classes.id'), nullable = False)
     ferry_result = relationship('Ferry_Result', backref = 'ferry')

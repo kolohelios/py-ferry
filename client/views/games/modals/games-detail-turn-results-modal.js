@@ -33,13 +33,13 @@ angular.module('py-ferry')
          routeTotals.fuelUsed += ferryRow.fuelUsed;
          totals.fuelUsed += ferryRow.fuelUsed;
          
-         ferryRow.fuelCost = ferryRow.fuelUsed * $scope.turnResult.fuel_cost;
+         ferryRow.fuelCost = Math.ceil(ferryRow.fuelUsed * $scope.turnResult.fuel_cost);
          
          $scope.rows.push(ferryRow);
       });
       routeTotals.type = 'route';
       routeTotals.name = route.first_terminal.name + ' to ' + route.second_terminal.name;
-      routeTotals.fuelCost = routeTotals.fuelUsed * $scope.turnResult.fuel_cost;
+      routeTotals.fuelCost = Math.ceil(routeTotals.fuelUsed * $scope.turnResult.fuel_cost);
       $scope.rows.push(routeTotals);
   });
   totals.type = 'total';

@@ -11,7 +11,7 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
         span.icon-bar
       a.navbar-brand(ui-sref='home' href="") py-ferry
     .collapse.navbar-collapse(uib-collapse="isCollapsed" collapse="isCollapsed")
-      div.game-stats(ng-if="game().current_year")
+      div.game-stats(ng-if="game().current_year" style="float: left;")
         span.stat 
           span Year: 
           span(ng-bind="game().current_year")
@@ -20,19 +20,7 @@ nav#header.navbar.navbar-default.navbar-fixed-top(ng-controller="NavCtrl")
           span(ng-bind="game().current_week")
         span.stat 
           span Cash: 
-          span(ng-bind="game().cash_available | currency : '$' : 0")
-      
-      // ul.main-menu.nav.navbar-nav.navbar-left
-      //   li.dropdown
-      //     a(href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false") Games
-      //       i.fa.fa-chevron-down
-      //     ul.dropdown-menu
-      //       li
-      //         a(ui-sref="gamesList" href="" ng-click="collapse()") Games List
-      //       li(ng-repeat="game in games")
-      //         a(ui-sref="/" href="" ng-click="collapse()") {{game.name}}
-      //   li
-      //     a(ui-sref="/" href="" ng-click="isCollapsed = true") Next Turn
+          span(ng-bind="game().cash_available | currencyScaler")
       ul.main-menu.nav.navbar-nav.navbar-right(ng-if="userLoggedIn()")
         li
           a(href="" ng-click="logout(); isCollapsed = true") Logout

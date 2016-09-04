@@ -85,7 +85,7 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
-    }
+    };
     
     $scope.ferry.sell = function() {
         var modalInstance = $uibModal.open({
@@ -105,6 +105,29 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
         
         modalInstance.result.then(function(ferryId) {
             _.remove($scope.ferries, {id: ferryId});
+        }, function() {
+          console.info('Modal dismissed at: ' + new Date());
+        });
+    };
+    
+    $scope.ferry.maintenance = function() {
+        var modalInstance = $uibModal.open({
+           animation: $scope.animationsEnabled,
+           templateUrl: 'views/games/modals/games-detail-ferry-maintenance-modal.html',
+           controller: 'GamesDetailFerryMaintenanceModalInstanceCtrl',
+           size: 'md',
+           resolve: {
+               ferries: function() {
+                   return $scope.game().ferries;
+               },
+               game: function() {
+                   return $scope.game();
+               }
+           }
+        });
+        
+        modalInstance.result.then(function(ferry) {
+            $scope.ferries.push(ferry);
         }, function() {
           console.info('Modal dismissed at: ' + new Date());
         });
@@ -183,24 +206,26 @@ function($scope, $state, Game, Utils, $uibModal, FerryClass, Terminal, Ferry, Ro
     $scope.turnResults = {};
     
     $scope.turnResults.open = function() {
-        var modalInstance = $uibModal.open({
-           animation: $scope.animationsEnabled,
-           templateUrl: 'views/games/modals/games-detail-turn-results-modal.html',
-           controller: 'GamesDetailTurnResultsModalInstanceCtrl',
-           size: 'lg',
-           resolve: {
-              turnResult: function() {
-                  // TODO handle the new year problem here
-                  return TurnResult.fetch($scope.game().id, $scope.game().current_year, $scope.game().current_week - 1)
-                  .then(function(response) {
+        var modalInstance;
+        TurnResult.fetch($scope.game().id, $scope.game().current_year, $scope.game().current_week - 1)
+          .then(function(response) {
+              modalInstance = $uibModal.open({
+               animation: $scope.animationsEnabled,
+               templateUrl: 'views/games/modals/games-detail-turn-results-modal.html',
+               controller: 'GamesDetailTurnResultsModalInstanceCtrl',
+               size: 'lg',
+               resolve: {
+                  turnResult: function() {
+                      // TODO handle the new year problem here
                       return response;
-                  })
-                  .catch(function(error) {
-                      console.error(error);
-                  });
-              }
-           }
-        });
+                  }
+               }
+            });
+          })
+          .catch(function(error) {
+              console.error(error);
+          });
+        
         
         modalInstance.result.then(function() {
             
